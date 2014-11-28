@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<beans xmlns="http://www.springframework.org/schema/beans"   
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xmlns:aop="http://www.springframework.org/schema/aop"   
+    xmlns:tx="http://www.springframework.org/schema/tx"   
+    xmlns:p="http://www.springframework.org/schema/p" 
+    xsi:schemaLocation="   
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd   
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd   
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">   
+
+    <!-- Hibernate Framework -->
+    <!-- sessionFactory -->
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="configLocation">
+            <value>/WEB-INF/src/hibernate.cfg.xml</value>
+        </property>
+        <property name="mappingResources">
+            <list>
+                <value>com/ibooking/po/MenuType.hbm.xml</value>
+                <value>com/ibooking/po/Menu.hbm.xml</value>
+                <value>com/ibooking/po/User.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Dao Hibernate -->
+    <bean id="daoTemplate" abstract="true" lazy-init="true" p:sessionFactory-ref="sessionFactory"/>
+    <bean id="menuTypeDaoHbm" class="com.ibooking.dao.impl.MenuTypeDaoHibernate" parent="daoTemplate"/>
+    <bean id="menuDaoHbm" class="com.ibooking.dao.impl.MenuDaoHibernate" parent="daoTemplate"/>
+    <bean id="userDaoHbm" class="com.ibooking.dao.impl.UserDaoHibernate" parent="daoTemplate"/>
+
+    <!-- Dao Redis -->
+    <bean id="userDaoRds" class="com.ibooking.dao.impl.UserDaoRedis" p:userDaoHbm-ref="userDaoHbm"
+        init-method="init"/>
+
+    <!-- Dao Service -->
+    <bean id="serviceTemplate" abstract="true" lazy-init="true" 
+        p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
+        p:menuDaoHbm-ref="menuDaoHbm"
+        p:userDaoHbm-ref="userDaoHbm"
+        p:userDaoRds-ref="userDaoRds"/>
+    <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
+        parent="serviceTemplate"
+        init-method="init"
+        destroy-method="destory"/>
+
+</beans>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <constant name="struts.custom.i18n.resources" value="ibooking" />
+    <constant name="struts.objectFactory.spring.autoWire" value="name" />
+
+    <package name="default" namespace="/" extends="struts-default">
+        <default-action-ref name="indexEnter" />
+
+        <global-results>
+            <result name="error">/WEB-INF/jsp/error.jsp</result>
+        </global-results>
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+
+        <action name="indexEnter">
+            <result type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+        </action>
+
+        <action name="loginEnter">
+            <result type="dispatcher">/WEB-INF/jsp/login.jsp</result>
+        </action>
+
+        <action name="loginProcess" class="com.ibooking.action.LoginProcessAction">
+            <result name="input">/WEB-INF/jsp/login.jsp</result>
+            <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="failure">/WEB-INF/jsp/login.jsp</result>
+        </action>
+
+        <action name="logoutProcess" class="com.ibooking.action.LogoutProcessAction">
+            <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="failure">/WEB-INF/jsp/index.jsp</result>
+        </action>
+
+        <action name="regEnter">
+            <result type="dispatcher">/WEB-INF/jsp/reg.jsp</result>
+        </action>
+
+        <action name="regProcess" class="com.ibooking.action.RegProcessAction">
+            <result name="input">/WEB-INF/jsp/reg.jsp</result>
+            <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="failure">/WEB-INF/jsp/reg.jsp</result>
+        </action>
+
+    </package>
+</struts>

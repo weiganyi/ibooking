@@ -1,0 +1,56 @@
+/*
+	create by weigy on 20141107
+*/
+
+/*** index.jsp ***/
+body {
+    background-color: #eee;
+    padding-top: 70px;          /* leave a distance from the navbar */
+}
+
+/*** navbar.jsp ***/
+#ib-navbar {
+    background-color: #428bca;
+    margin: auto;
+}
+
+#ib-navbar-link-login, #ib-navbar-link-reg {
+    color: #fff;
+}
+
+/*** login.jsp ***/
+#ib-login-form {
+    width: 25%;
+    margin: 15% auto 0 auto;
+}
+
+#ib-login-label {
+    font-size: 150%;
+}
+
+.ib-login-error {
+    color: red;
+}
+
+#ib-login-btn-submit {
+    margin: 0 10%;
+}
+
+#ib-login-btn-reg {
+    margin: 0 10%;
+    float: right;
+}
+
+/*** login.jsp ***/
+#ib-reg-form {
+    width: 30%;
+    margin: 15% auto 0 auto;
+}
+
+#ib-reg-label {
+    font-size: 150%;
+}
+
+.ib-reg-error {
+    color: red;
+}

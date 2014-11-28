@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate//Hibernate Mapping DTD 3.0//EN" 
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.ibooking.po">
+    <class name="User" table="ib_user">
+        <id name="id" column="user_id" type="integer">
+            <generator class="identity"/>
+        </id>
+        <property name="name" column="user_name" type="string"/>
+        <property name="passwd" column="user_passwd" type="string"/>
+        <property name="auth" column="user_auth" type="string"/>
+        <property name="tel" column="user_tel" type="string"/>
+        <property name="addr" column="user_addr" type="string"/>
+    </class>
+</hibernate-mapping>

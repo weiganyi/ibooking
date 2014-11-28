@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate//Hibernate Mapping DTD 3.0//EN" 
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.ibooking.po">
+    <class name="Menu" table="ib_menu">
+        <id name="id" column="menu_id" type="integer">
+            <generator class="identity"/>
+        </id>
+        <property name="name" column="menu_name" type="string"/>
+        <property name="price" column="menu_price" type="int"/>
+        <property name="picture" column="menu_picture" type="string"/>
+        <many-to-one name="type" cascade="all" class="MenuType" column="menu_type_name"/>
+    </class>
+</hibernate-mapping>
