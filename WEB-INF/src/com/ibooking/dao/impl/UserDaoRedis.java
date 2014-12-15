@@ -28,28 +28,35 @@ public class UserDaoRedis implements UserDao {
 			autoInc--;
 			jedis.set("ib_user:auto_increment", autoInc.toString());
 		}else {
-			System.out.println("UserDaoRedis.UserDaoRedis() fail to read auto_increment from mysql");
+			System.out.println("UserDaoRedis.init() fail to read auto_increment from mysql");
 		}
 	}
-	
+
+	public UserDao getUserDaoHbm() {
+		return userDaoHbm;
+	}
+
+	public void setUserDaoHbm(UserDao userDaoHbm) {
+		this.userDaoHbm = userDaoHbm;
+	}
+
 	public Integer getNextId() {
 		return jedis.incr("ib_user:auto_increment").intValue();
 	}
 	
 	@Override
 	public User get(Integer id) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Integer save(User user) throws RedisException {
 		if (jedis != null) {
-			String userId = jedis.get("ib_user:" + user.getName());
+			String userId = jedis.get("ib_user:" + user.getName() + ":id");
 			if (userId == null) {
 				userId = user.getId().toString();
 
-				jedis.set("ib_user:" + user.getName(), userId);
+				jedis.set("ib_user:" + user.getName() + ":id", userId);
 
 				jedis.set("ib_user:" + userId + ":user_name", user.getName());
 				jedis.set("ib_user:" + userId + ":user_passwd", user.getPasswd());
@@ -66,19 +73,14 @@ public class UserDaoRedis implements UserDao {
 
 	@Override
 	public void update(User user) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void delete(User user) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public List<User> findAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -88,7 +90,7 @@ public class UserDaoRedis implements UserDao {
 		User user = new User();
 		
 		if (jedis != null) {
-			String userId = jedis.get("ib_user:" + name);
+			String userId = jedis.get("ib_user:" + name + ":id");
 			if (userId != null) {
 				String userPwd = jedis.get("ib_user:" + userId + ":user_passwd");
 				String userAuth = jedis.get("ib_user:" + userId + ":user_auth");
@@ -108,13 +110,5 @@ public class UserDaoRedis implements UserDao {
 		}
 
 		return null;
-	}
-
-	public UserDao getUserDaoHbm() {
-		return userDaoHbm;
-	}
-
-	public void setUserDaoHbm(UserDao userDaoHbm) {
-		this.userDaoHbm = userDaoHbm;
 	}
 }

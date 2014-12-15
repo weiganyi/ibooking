@@ -33,13 +33,19 @@
     <!-- Dao Redis -->
     <bean id="userDaoRds" class="com.ibooking.dao.impl.UserDaoRedis" p:userDaoHbm-ref="userDaoHbm"
         init-method="init"/>
+    <bean id="menuDaoRds" class="com.ibooking.dao.impl.MenuDaoRedis" p:menuDaoHbm-ref="menuDaoHbm"
+        init-method="init"/>
+    <bean id="menuTypeDaoRds" class="com.ibooking.dao.impl.MenuTypeDaoRedis" p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
+        init-method="init"/>
 
     <!-- Dao Service -->
     <bean id="serviceTemplate" abstract="true" lazy-init="true" 
         p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
         p:menuDaoHbm-ref="menuDaoHbm"
         p:userDaoHbm-ref="userDaoHbm"
-        p:userDaoRds-ref="userDaoRds"/>
+        p:userDaoRds-ref="userDaoRds"
+        p:menuDaoRds-ref="menuDaoRds"
+        p:menuTypeDaoRds-ref="menuTypeDaoRds"/>
     <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
         parent="serviceTemplate"
         init-method="init"

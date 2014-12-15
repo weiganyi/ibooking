@@ -20,6 +20,27 @@
         <%-- the navbar --%>
         <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
 
-        <p>success<p/>
+        <s:iterator value="lstMenuTypeBean" id="bean" status="st">
+        <div class="row">
+            <h2 class="ib-idx-caption"><s:property value="#bean.name" /></h2>
+            <s:iterator value="#bean.lst" id="bean2">
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="<s:property value="#bean2.addr" />">
+                    <h4 class="ib-idx-caption"><s:property value="#bean2.name" /></h4>
+                    <h5 class="ib-idx-caption">
+                        <s:text name="indexPrice" />: <s:property value="#bean2.price" />
+                    </h5>
+                    <p class="ib-idx-caption">
+                        <button id="ib-index-btn-select" class="btn btn-primary">
+                            <s:text name="indexSelectBtn" />
+                        </button>
+                    </p>
+                </div>
+            </div>
+            </s:iterator>
+        </div>
+        </s:iterator>
+
     </body>
 </html>

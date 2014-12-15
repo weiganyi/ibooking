@@ -1,7 +1,6 @@
 package com.ibooking.action;
 
 import com.ibooking.action.base.*;
-import com.ibooking.po.*;
 
 public class RegProcessAction extends BaseAction {
 
@@ -17,17 +16,10 @@ public class RegProcessAction extends BaseAction {
 
 	@Override
 	public String execute() {
-		User user = daoService.getUserByName(userName);
-
-		if (user == null) {
-			boolean ret = daoService.insertUser(userName, userPasswd, "customer", userTel, userAddr);
-			if (ret) {
-				return RET_SUCC;
-			}else {
-				failReason = getText("regFailure");
-				return RET_FAIL;
-			}
-		}else {
+		boolean ret = daoService.insertUser(userName, userPasswd, "customer", userTel, userAddr);
+		if (ret) {
+			return RET_SUCC;
+		} else {
 			failReason = getText("regFailure");
 			return RET_FAIL;
 		}

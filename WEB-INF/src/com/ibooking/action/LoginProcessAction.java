@@ -1,7 +1,6 @@
 package com.ibooking.action;
 
 import com.ibooking.action.base.*;
-import com.ibooking.po.*;
 import com.ibooking.util.*;
 
 import com.opensymphony.xwork2.ActionContext;
@@ -19,10 +18,8 @@ public class LoginProcessAction extends BaseAction {
 	@Override
 	public String execute() {
 		ActionContext ctx = ActionContext.getContext();
-		User user = daoService.getUserByName(userName);
-		
-		if (user != null && user.getPasswd().endsWith(userPasswd)) {
-			String userAuth = user.getAuth();
+		if (daoService.validatePasswd(userName, userPasswd)) {
+			String userAuth = daoService.getUserAuthByName(userName);
 
 			//save the user info
 			ctx.getSession().put(WebConstant.LOGIN_USER, userName);

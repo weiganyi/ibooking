@@ -17,8 +17,9 @@
             <exception-mapping exception="java.lang.Exception" result="error"/>
         </global-exception-mappings>
 
-        <action name="indexEnter">
-            <result type="dispatcher">/WEB-INF/jsp/index.jsp</result>
+        <action name="indexEnter" class="com.ibooking.action.IndexEnterAction">
+            <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
         <action name="loginEnter">

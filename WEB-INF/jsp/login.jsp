@@ -47,7 +47,7 @@
         </div>
 
         <%-- the javascript --%>
-        <%--script type="text/javascript">
+        <script type="text/javascript">
             $("#ib-login-btn-submit").click(
                 function() {
                     if ($("#ib-login-input-user").val() == "" || $("#ib-login-input-passwd").val() == "") {
@@ -56,7 +56,7 @@
                     }
                 }
             )
-        </script--%>
+        </script>
 
     </body>
 </html>

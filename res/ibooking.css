@@ -8,6 +8,10 @@ body {
     padding-top: 70px;          /* leave a distance from the navbar */
 }
 
+.ib-idx-caption {
+    text-align: center;
+}
+
 /*** navbar.jsp ***/
 #ib-navbar {
     background-color: #428bca;
@@ -41,7 +45,7 @@ body {
     float: right;
 }
 
-/*** login.jsp ***/
+/*** reg.jsp ***/
 #ib-reg-form {
     width: 30%;
     margin: 15% auto 0 auto;

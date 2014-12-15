@@ -30,32 +30,27 @@ public class UserDaoHibernate extends HibernateDaoSupport implements UserDao {
 	
 	@Override
 	public User get(Integer id) {
-		// TODO Auto-generated method stub
 		return getHibernateTemplate().get(User.class, id);
 	}
 
 	@Override
 	public Integer save(User user) {
-		// TODO Auto-generated method stub
 		return (Integer) getHibernateTemplate().save(user);
 	}
 
 	@Override
 	public void update(User user) {
-		// TODO Auto-generated method stub
 		getHibernateTemplate().update(user);
 	}
 
 	@Override
 	public void delete(User user) {
-		// TODO Auto-generated method stub
 		getHibernateTemplate().delete(user);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<User> findAll() {
-		// TODO Auto-generated method stub
 		return getHibernateTemplate().find("from User");
 	}
 

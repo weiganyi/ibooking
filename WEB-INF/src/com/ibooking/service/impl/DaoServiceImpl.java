@@ -1,5 +1,6 @@
 package com.ibooking.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -7,6 +8,7 @@ import com.ibooking.dao.*;
 import com.ibooking.dao.impl.*;
 import com.ibooking.po.*;
 import com.ibooking.service.*;
+import com.ibooking.vo.*;
 
 public class DaoServiceImpl implements DaoService {
 	private MenuDao menuDaoHbm;
@@ -14,13 +16,135 @@ public class DaoServiceImpl implements DaoService {
 	private UserDao userDaoHbm;
 	
 	private UserDao userDaoRds;
+	private MenuDao menuDaoRds;
+	private MenuTypeDao menuTypeDaoRds;
 	
 	enum OPT {INVALID, SAVE_USER, UPDATE, DELETE};
 	private LinkedBlockingQueue<OptInfo> q;
 	private Thread thd;
 
 	@Override
-	public User getUserByName(String userName) {
+	public boolean validatePasswd(String userName, String userPasswd) {
+		User user = getUserByName(userName);
+		if (user != null && user.getPasswd().endsWith(userPasswd)) {
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	@Override
+	public String getUserAuthByName(String userName) {
+		User user = getUserByName(userName);
+		if (user != null) {
+			return user.getAuth();
+		}else {
+			return null;
+		}
+	}
+	
+	@Override
+	public boolean insertUser(String userName, 					
+							String userPasswd, 
+							String userAuth, 
+							String userTel, 
+							String userAddr) {
+		User user = getUserByName(userName);
+		if (user != null) {
+			return false;
+		}
+		
+		user = new User();
+		
+		user.setName(userName);
+		user.setPasswd(userPasswd);
+		user.setAuth(userAuth);
+		user.setTel(userTel);
+		user.setAddr(userAddr);
+		user.setId(((UserDaoRedis)userDaoRds).getNextId());
+
+		try {
+			//save into redis
+			userDaoRds.save(user);
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.insertUser() userDaoRds.save() catch exception: " + e.getMessage());
+			return false;
+		}
+		
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.SAVE_USER);
+		oi.setNewUser(user);
+		try {
+			//put into queue to save into hibernate
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.insertUser() q.put() catch exception: " + e.getMessage());
+			try {
+				//if fail, need restore the redis
+				userDaoRds.delete(user);
+			}catch (Exception e2) {
+				System.out.println("DaoServiceImpl.insertUser() userDaoRds.delete() catch exception: " + e.getMessage());
+				//redis and mysql will be inconsistency in here
+			}
+			return false;
+		}
+		
+		return true;
+	}
+
+	@Override
+	public ArrayList<MenuTypeBean> getAllMenuTypeBean() {
+		List<Menu> lstMenu = null;
+		List<MenuType> lstMenuType = null;
+		ArrayList<MenuTypeBean> lstMenuTypeBean = new ArrayList<MenuTypeBean>();
+		
+		try {
+			//get from redis
+			lstMenu = menuDaoRds.findAll();
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.getAllMenuTypeBean() menuDaoRds.findAll() catch exception: " + e.getMessage());
+		}
+		
+		try {
+			//get from redis
+			lstMenuType = menuTypeDaoRds.findAll();
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.getAllMenuTypeBean() menuTypeDaoRds.findAll() catch exception: " + e.getMessage());
+		}
+		
+		//construct the list of MenuTypeBean
+		if (lstMenu != null && lstMenu.size() != 0 &&
+			lstMenuType != null && lstMenuType.size() != 0) {
+			for (MenuType menuType : lstMenuType) {
+				MenuTypeBean menuTypeBean = new MenuTypeBean();
+
+				ArrayList<MenuBean> lst = new ArrayList<MenuBean>();
+				menuTypeBean.setLst(lst);
+				menuTypeBean.setName(menuType.getName());
+				
+				for (Menu menu: lstMenu) {
+					if (menuType.getName().equals(menu.getType().getName())) {
+						MenuBean menuBean = new MenuBean();
+						menuBean.setName(menu.getName());
+						menuBean.setPrice(String.valueOf(menu.getPrice()));
+						menuBean.setAddr(menu.getPicture());
+						
+						menuTypeBean.getLst().add(menuBean);
+					}
+				}
+				
+				if (menuTypeBean.getLst().size() != 0) {
+					lstMenuTypeBean.add(menuTypeBean);
+				}
+			}
+			
+			return lstMenuTypeBean;
+		}
+		
+		return null;
+	}
+	
+	private User getUserByName(String userName) {
 		List<User> lstUser = null;
 		
 		try {
@@ -53,52 +177,7 @@ public class DaoServiceImpl implements DaoService {
 		
 		return lstUser.get(0);
 	}
-	
-	@Override
-	public boolean insertUser(String userName, 					
-							String userPasswd, 
-							String userAuth, 
-							String userTel, 
-							String userAddr) {
-		User user = new User();
-		
-		user.setName(userName);
-		user.setPasswd(userPasswd);
-		user.setAuth(userAuth);
-		user.setTel(userTel);
-		user.setAddr(userAddr);
-		user.setId(((UserDaoRedis)userDaoRds).getNextId());
 
-		try {
-			//save into redis
-			userDaoRds.save(user);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.insertUser() userDaoRds.save() catch exception: " + e.getMessage());
-			return false;
-		}
-		
-		OptInfo oi = new OptInfo();
-		oi.setOpt(OPT.SAVE_USER);
-		oi.setNewUser(user);
-		try {
-			//put into queue to save into hibernate
-			q.put(oi);
-		}catch (InterruptedException e) {
-			System.out.println("DaoServiceImpl.insertUser() q.put() catch exception: " + e.getMessage());
-			try {
-				//if fail, need restore the redis
-				userDaoRds.delete(user);
-			}catch (Exception e2) {
-				System.out.println("DaoServiceImpl.insertUser() userDaoRds.delete() catch exception: " + e.getMessage());
-				//redis and mysql will be inconsistency in here
-				
-			}
-			return false;
-		}
-		
-		return true;
-	}
-	
 	public MenuDao getMenuDaoHbm() {
 		return menuDaoHbm;
 	}
@@ -130,7 +209,23 @@ public class DaoServiceImpl implements DaoService {
 	public void setUserDaoRds(UserDao userDaoRds) {
 		this.userDaoRds = userDaoRds;
 	}
-	
+
+	public MenuDao getMenuDaoRds() {
+		return menuDaoRds;
+	}
+
+	public void setMenuDaoRds(MenuDao menuDaoRds) {
+		this.menuDaoRds = menuDaoRds;
+	}
+
+	public MenuTypeDao getMenuTypeDaoRds() {
+		return menuTypeDaoRds;
+	}
+
+	public void setMenuTypeDaoRds(MenuTypeDao menuTypeDaoRds) {
+		this.menuTypeDaoRds = menuTypeDaoRds;
+	}
+
 	private class OptInfo {
 		private OPT opt;
 		private User oldUser;
@@ -212,7 +307,8 @@ public class DaoServiceImpl implements DaoService {
 							//redis and mysql will be inconsistency in here
 						}
 					}
-				}else if (oi.getOpt() == OPT.UPDATE) {
+				}/*
+				else if (oi.getOpt() == OPT.UPDATE) {
 					newUser = oi.getNewUser();
 					oldUser = oi.getOldUser();
 					
@@ -241,7 +337,7 @@ public class DaoServiceImpl implements DaoService {
 							continue;
 						}
 					}
-				}
+				}*/
 			}
 		}
 	}

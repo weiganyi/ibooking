@@ -52,7 +52,7 @@
         </div>
 
         <%-- the javascript --%>
-        <%--script type="text/javascript">
+        <script type="text/javascript">
             $("#ib-reg-btn-submit").click(
                 function() {
                     if ($("#ib-reg-input-user").val() == "" || $("#ib-reg-input-passwd").val() == ""
@@ -62,7 +62,7 @@
                     }
                 }
             )
-        </script--%>
+        </script>
 
     </body>
 </html>
