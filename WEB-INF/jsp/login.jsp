@@ -5,6 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <%-- include the struct tag --%>
         <%@taglib prefix="s" uri="/struts-tags" %>
 
         <title><s:text name="loginTitle" /></title>
@@ -22,25 +23,25 @@
 
         <%-- the content --%>
         <div class="container">
-            <form method="post" id="ib-login-form" action="loginProcess" role="form">
+            <form method="post" id="ib_login_form" action="loginProcess" role="form">
                 <div class="form-group">
-                    <label id="ib-login-label" for="ib-login-input-user">
+                    <label id="ib_login_label" for="ib_login_user_input">
                         <s:text name="loginInput" />
                     </label>
-                    <input type="text" id="ib-login-input-user" name="userName" class="form-control input-lg" placeholder="<s:text name="loginUserName" />" />
-                    <div class="ib-login-error">
+                    <input type="text" id="ib_login_user_input" name="userName" class="form-control input-lg" placeholder="<s:text name="loginUserName" />" />
+                    <div class="ib_login_error_div">
                         <s:fielderror fieldName="userName"/>
                     </div>
-                    <input type="password" id="ib-login-input-passwd" name="userPasswd" class="form-control input-lg" placeholder="<s:text name="loginUserPasswd" />" />
-                    <div class="ib-login-error">
+                    <input type="password" id="ib_login_passwd_input" name="userPasswd" class="form-control input-lg" placeholder="<s:text name="loginUserPasswd" />" />
+                    <div class="ib_login_error_div">
                         <s:fielderror fieldName="userPasswd"/>
                         <s:property value="failReason" escape="false"/>
                     </div>
                 </div>
-                <button id="ib-login-btn-submit" type="submit" class="btn btn-primary btn-lg">
+                <button id="ib_login_submit_btn" type="submit" class="btn btn-primary btn-lg">
                     <s:text name="loginSubmit" />
                 </button>
-                <a id="ib-login-btn-reg" href="regEnter" class="btn btn-primary btn-lg" role="button">
+                <a id="ib_login_reg_btn" href="regEnter" class="btn btn-primary btn-lg" role="button">
                     <s:text name="loginReg" />
                 </a>
             </form>
@@ -48,9 +49,9 @@
 
         <%-- the javascript --%>
         <script type="text/javascript">
-            $("#ib-login-btn-submit").click(
+            $("#ib_login_submit_btn").click(
                 function() {
-                    if ($("#ib-login-input-user").val() == "" || $("#ib-login-input-passwd").val() == "") {
+                    if ($("#ib_login_user_input").val() == "" || $("#ib_login_passwd_input").val() == "") {
                         alert("<s:text name="loginInputIsNull" />");
                         return false;
                     }

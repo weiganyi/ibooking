@@ -1,8 +1,6 @@
 package com.ibooking.service;
 
-import java.util.ArrayList;
-
-import com.ibooking.vo.MenuTypeBean;
+import com.ibooking.vo.*;
 
 public interface DaoService {
 	boolean validatePasswd(String userName, String userPasswd);
@@ -15,5 +13,6 @@ public interface DaoService {
 					String userTel, 
 					String userAddr);
 	
-	ArrayList<MenuTypeBean> getAllMenuTypeBean();
+	String getTitle();
+	IndexMenuBean getIndexMenuBean(int iCurrPage);
 }

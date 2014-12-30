@@ -29,7 +29,7 @@ CREATE TABLE `ib_menu` (
   `menu_pic_addr` char(255) NOT NULL,
   `menu_type_id` int(4) NOT NULL,
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `ib_menu` (
 
 LOCK TABLES `ib_menu` WRITE;
 /*!40000 ALTER TABLE `ib_menu` DISABLE KEYS */;
-INSERT INTO `ib_menu` VALUES (1,'剁椒鱼头',15,'res/pic/',1),(2,'红烧肉',16,'res/pic/',1),(3,'香芹香干肉丝',12,'res/pic/',1),(4,'蒜蓉菠菜',10,'res/pic/',1),(5,'米饭',2,'res/pic/',2);
+INSERT INTO `ib_menu` VALUES (1,'剁椒鱼头',15,'res/pic/剁椒鱼头.jpg',1),(2,'红烧肉',16,'res/pic/红烧肉.jpg',1),(3,'香芹香干肉丝',12,'res/pic/香芹香干肉丝.jpg',1),(4,'蒜蓉菠菜',10,'res/pic/蒜蓉菠菜.jpg',1),(5,'米饭',2,'res/pic/米饭.jpg',2),(6,'青椒牛肉',16,'res/pic/青椒牛肉.jpg',1),(7,'凉瓜炒蛋',12,'res/pic/凉瓜炒蛋.jpg',1),(8,'凉拌三丝',12,'res/pic/凉拌三丝.jpg',3);
 /*!40000 ALTER TABLE `ib_menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -54,7 +54,7 @@ CREATE TABLE `ib_menu_type` (
   `menu_type_name` char(255) NOT NULL,
   PRIMARY KEY (`menu_type_id`),
   KEY `menu_type_name` (`menu_type_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +63,7 @@ CREATE TABLE `ib_menu_type` (
 
 LOCK TABLES `ib_menu_type` WRITE;
 /*!40000 ALTER TABLE `ib_menu_type` DISABLE KEYS */;
-INSERT INTO `ib_menu_type` VALUES (2,'主食'),(1,'炒菜');
+INSERT INTO `ib_menu_type` VALUES (2,'主食'),(3,'凉菜'),(1,'炒菜');
 /*!40000 ALTER TABLE `ib_menu_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,7 +79,7 @@ CREATE TABLE `ib_option` (
   `option_name` char(255) NOT NULL,
   `option_value` char(255) NOT NULL,
   PRIMARY KEY (`option_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +88,7 @@ CREATE TABLE `ib_option` (
 
 LOCK TABLES `ib_option` WRITE;
 /*!40000 ALTER TABLE `ib_option` DISABLE KEYS */;
-INSERT INTO `ib_option` VALUES (1,'title','我的小店');
+INSERT INTO `ib_option` VALUES (1,'title','我的小店'),(2,'idx_menu_lines','3');
 /*!40000 ALTER TABLE `ib_option` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +188,7 @@ CREATE TABLE `ib_user` (
   `user_addr` char(255) NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `user_name` (`user_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +197,7 @@ CREATE TABLE `ib_user` (
 
 LOCK TABLES `ib_user` WRITE;
 /*!40000 ALTER TABLE `ib_user` DISABLE KEYS */;
-INSERT INTO `ib_user` VALUES (1,'admin','123456','admin','12345678901','蛇口'),(29,'weigy','123456','customer','13760209518','宝安西乡大益广场2栋16座2B');
+INSERT INTO `ib_user` VALUES (1,'admin','123456','admin','12345678901','蛇口'),(30,'weigy','123456','customer','13760209518','宝安西乡大益广场2栋16座2B');
 /*!40000 ALTER TABLE `ib_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -214,4 +214,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-08  9:50:46
+-- Dump completed on 2014-12-30 15:45:42

@@ -11,9 +11,6 @@ public class LogoutProcessAction extends BaseAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private static final String RET_SUCC = "success";
-	private static final String RET_FAIL = "failure";
 	
 	@Override
 	public String execute() {
@@ -26,7 +23,8 @@ public class LogoutProcessAction extends BaseAction {
 			ctx.getSession().put(WebConstant.LOGIN_AUTH, null);
 			ctx.getSession().clear();
 
-			return RET_SUCC;
+			procTitle();
+			return procIndex();
 		}else {
 			return RET_FAIL;
 		}

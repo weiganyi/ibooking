@@ -8,53 +8,66 @@ body {
     padding-top: 70px;          /* leave a distance from the navbar */
 }
 
-.ib-idx-caption {
+.ib_idx_caption_h {
     text-align: center;
 }
 
 /*** navbar.jsp ***/
-#ib-navbar {
+#ib_navbar_nav {
     background-color: #428bca;
     margin: auto;
 }
 
-#ib-navbar-link-login, #ib-navbar-link-reg {
+#ib_navbar_login_a, #ib_navbar_reg_a {
     color: #fff;
 }
 
+#ib_navbar_link_index_a {
+    font-size: 250%;
+    font-weight: bold;
+    color: white;
+}
+
+/*** navbar.jsp ***/
+#ib_pag_nav {
+    margin: 0 auto;
+    width: auto;
+    text-align: center;
+}
+
 /*** login.jsp ***/
-#ib-login-form {
+#ib_login_form {
     width: 25%;
     margin: 15% auto 0 auto;
 }
 
-#ib-login-label {
+#ib_login_label {
     font-size: 150%;
 }
 
-.ib-login-error {
+.ib_login_error_div {
     color: red;
 }
 
-#ib-login-btn-submit {
+#ib_login_submit_btn {
     margin: 0 10%;
 }
 
-#ib-login-btn-reg {
+#ib_login_reg_btn {
     margin: 0 10%;
     float: right;
 }
 
 /*** reg.jsp ***/
-#ib-reg-form {
+#ib_reg_form {
     width: 30%;
     margin: 15% auto 0 auto;
 }
 
-#ib-reg-label {
+#ib_reg_label {
     font-size: 150%;
 }
 
-.ib-reg-error {
+.ib_reg_error_div {
     color: red;
 }

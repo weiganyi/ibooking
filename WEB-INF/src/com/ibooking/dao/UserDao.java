@@ -2,7 +2,7 @@ package com.ibooking.dao;
 
 import java.util.List;
 
-import com.ibooking.po.User;
+import com.ibooking.po.*;
 import com.ibooking.util.RedisException;
 
 public interface UserDao {

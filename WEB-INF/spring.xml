@@ -20,6 +20,7 @@
                 <value>com/ibooking/po/MenuType.hbm.xml</value>
                 <value>com/ibooking/po/Menu.hbm.xml</value>
                 <value>com/ibooking/po/User.hbm.xml</value>
+                <value>com/ibooking/po/Option.hbm.xml</value>
             </list>
         </property>
     </bean>
@@ -29,6 +30,7 @@
     <bean id="menuTypeDaoHbm" class="com.ibooking.dao.impl.MenuTypeDaoHibernate" parent="daoTemplate"/>
     <bean id="menuDaoHbm" class="com.ibooking.dao.impl.MenuDaoHibernate" parent="daoTemplate"/>
     <bean id="userDaoHbm" class="com.ibooking.dao.impl.UserDaoHibernate" parent="daoTemplate"/>
+    <bean id="optionDaoHbm" class="com.ibooking.dao.impl.OptionDaoHibernate" parent="daoTemplate"/>
 
     <!-- Dao Redis -->
     <bean id="userDaoRds" class="com.ibooking.dao.impl.UserDaoRedis" p:userDaoHbm-ref="userDaoHbm"
@@ -37,15 +39,19 @@
         init-method="init"/>
     <bean id="menuTypeDaoRds" class="com.ibooking.dao.impl.MenuTypeDaoRedis" p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
         init-method="init"/>
+    <bean id="optionDaoRds" class="com.ibooking.dao.impl.OptionDaoRedis" p:optionDaoHbm-ref="optionDaoHbm"
+        init-method="init"/>
 
     <!-- Dao Service -->
     <bean id="serviceTemplate" abstract="true" lazy-init="true" 
-        p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
         p:menuDaoHbm-ref="menuDaoHbm"
+        p:menuDaoRds-ref="menuDaoRds"
+        p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
+        p:menuTypeDaoRds-ref="menuTypeDaoRds"
         p:userDaoHbm-ref="userDaoHbm"
         p:userDaoRds-ref="userDaoRds"
-        p:menuDaoRds-ref="menuDaoRds"
-        p:menuTypeDaoRds-ref="menuTypeDaoRds"/>
+        p:optionDaoHbm-ref="optionDaoHbm"
+        p:optionDaoRds-ref="optionDaoRds"/>
     <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
         parent="serviceTemplate"
         init-method="init"

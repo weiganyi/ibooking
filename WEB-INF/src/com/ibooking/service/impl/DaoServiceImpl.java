@@ -14,15 +14,19 @@ public class DaoServiceImpl implements DaoService {
 	private MenuDao menuDaoHbm;
 	private MenuTypeDao menuTypeDaoHbm;
 	private UserDao userDaoHbm;
+	private OptionDao optionDaoHbm;
 	
-	private UserDao userDaoRds;
 	private MenuDao menuDaoRds;
 	private MenuTypeDao menuTypeDaoRds;
+	private UserDao userDaoRds;
+	private OptionDao optionDaoRds;
 	
 	enum OPT {INVALID, SAVE_USER, UPDATE, DELETE};
 	private LinkedBlockingQueue<OptInfo> q;
 	private Thread thd;
 
+	private static final int defaultMaxPagination = 7; 
+	
 	@Override
 	public boolean validatePasswd(String userName, String userPasswd) {
 		User user = getUserByName(userName);
@@ -64,7 +68,7 @@ public class DaoServiceImpl implements DaoService {
 		user.setId(((UserDaoRedis)userDaoRds).getNextId());
 
 		try {
-			//save into redis
+			//save the user into redis
 			userDaoRds.save(user);
 		}catch (Exception e) {
 			System.out.println("DaoServiceImpl.insertUser() userDaoRds.save() catch exception: " + e.getMessage());
@@ -75,7 +79,7 @@ public class DaoServiceImpl implements DaoService {
 		oi.setOpt(OPT.SAVE_USER);
 		oi.setNewUser(user);
 		try {
-			//put into queue to save into hibernate
+			//put the user into queue to save into hibernate
 			q.put(oi);
 		}catch (InterruptedException e) {
 			System.out.println("DaoServiceImpl.insertUser() q.put() catch exception: " + e.getMessage());
@@ -93,62 +97,148 @@ public class DaoServiceImpl implements DaoService {
 	}
 
 	@Override
-	public ArrayList<MenuTypeBean> getAllMenuTypeBean() {
+	public IndexMenuBean getIndexMenuBean(int iCurrPage) {
 		List<Menu> lstMenu = null;
 		List<MenuType> lstMenuType = null;
+		List<Option> lstOption = null;
+
+		MenuTypeBean menuTypeBean;
 		ArrayList<MenuTypeBean> lstMenuTypeBean = new ArrayList<MenuTypeBean>();
+		IndexMenuBean clsIndexMenuBean = new IndexMenuBean();
+
+		String optionName = "idx_menu_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		boolean bIsNewMenuType = false;
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+
+		int iMaxMenuOneLine = 4;
+		int iMenuNum = 0;
 		
 		try {
-			//get from redis
+			//get the menu from redis
 			lstMenu = menuDaoRds.findAll();
 		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getAllMenuTypeBean() menuDaoRds.findAll() catch exception: " + e.getMessage());
+			System.out.println("DaoServiceImpl.getIndexMenuBean() menuDaoRds.findAll() catch exception: " + e.getMessage());
 		}
 		
 		try {
-			//get from redis
+			//get the menutype from redis
 			lstMenuType = menuTypeDaoRds.findAll();
 		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getAllMenuTypeBean() menuTypeDaoRds.findAll() catch exception: " + e.getMessage());
+			System.out.println("DaoServiceImpl.getIndexMenuBean() menuTypeDaoRds.findAll() catch exception: " + e.getMessage());
 		}
 		
-		//construct the list of MenuTypeBean
+		try {
+			//get the idx_menu_lines from redis
+			lstOption = optionDaoRds.findByName(optionName);
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.getIndexMenuBean() optionDaoRds.findByName() catch exception: " + e.getMessage());
+		}
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		//iterator the Menu and MenuType
 		if (lstMenu != null && lstMenu.size() != 0 &&
 			lstMenuType != null && lstMenuType.size() != 0) {
 			for (MenuType menuType : lstMenuType) {
-				MenuTypeBean menuTypeBean = new MenuTypeBean();
-
-				ArrayList<MenuBean> lst = new ArrayList<MenuBean>();
-				menuTypeBean.setLst(lst);
-				menuTypeBean.setName(menuType.getName());
+				menuTypeBean = null;
+				iMenuNum = 0;
+				bIsNewMenuType = false;
 				
 				for (Menu menu: lstMenu) {
 					if (menuType.getName().equals(menu.getType().getName())) {
-						MenuBean menuBean = new MenuBean();
-						menuBean.setName(menu.getName());
-						menuBean.setPrice(String.valueOf(menu.getPrice()));
-						menuBean.setAddr(menu.getPicture());
-						
-						menuTypeBean.getLst().add(menuBean);
+						iMenuNum++;
+
+						if (!bIsNewMenuType) {
+							iLineNum++;
+							bIsNewMenuType = true;
+						}
+						if (iMenuNum > iMaxMenuOneLine) {
+							iMenuNum = 0;
+							iLineNum++;
+						}
+						if (iLineNum > iMaxLineOnePage) {
+							iLineNum = 1;
+							iPageNum++;
+						}
+
+						if (iPageNum == iCurrPage) {
+							if (menuTypeBean == null) {
+								menuTypeBean = new MenuTypeBean();
+	
+								ArrayList<MenuBean> lst = new ArrayList<MenuBean>();
+								menuTypeBean.setLst(lst);
+								menuTypeBean.setName(menuType.getName());
+							}
+	
+							MenuBean menuBean = new MenuBean();
+							menuBean.setName(menu.getName());
+							menuBean.setPrice(String.valueOf(menu.getPrice()));
+							menuBean.setAddr(menu.getPicture());
+							
+							menuTypeBean.getLst().add(menuBean);
+						}
 					}
 				}
 				
-				if (menuTypeBean.getLst().size() != 0) {
+				if (menuTypeBean != null) {
 					lstMenuTypeBean.add(menuTypeBean);
 				}
 			}
 			
-			return lstMenuTypeBean;
+			//calc the startpage and endpage
+			if (iPageNum <= defaultMaxPagination) {
+				iStartPage = 1;
+				iEndPage = iPageNum;
+			}else {
+				if (iCurrPage > defaultMaxPagination/2) {
+					iStartPage = iCurrPage - defaultMaxPagination/2;
+				}else {
+					iStartPage = 1;
+				}
+
+				if (iPageNum >= (iCurrPage + defaultMaxPagination/2)) {
+					iEndPage = iCurrPage + defaultMaxPagination/2;
+				}else {
+					iEndPage = iPageNum;
+				}
+			}
+			clsIndexMenuBean.setStartPage(iStartPage);
+			clsIndexMenuBean.setEndPage(iEndPage);
+			clsIndexMenuBean.setMaxPage(iPageNum);
+
+			clsIndexMenuBean.setLst(lstMenuTypeBean);
+			
+			return clsIndexMenuBean;
 		}
 		
 		return null;
+	}
+
+	@Override
+	public String getTitle() {
+		List<Option> lstOption = null;
+		String optionName = "title";
+		
+		try {
+			//get the title from redis
+			lstOption = optionDaoRds.findByName(optionName);
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.getTitle() optionDaoRds.findByName() catch exception: " + e.getMessage());
+		}
+		
+		return lstOption.get(0).getValue();
 	}
 	
 	private User getUserByName(String userName) {
 		List<User> lstUser = null;
 		
 		try {
-			//get from redis
+			//get the user from redis
 			lstUser = userDaoRds.findByName(userName);
 		}catch (Exception e) {
 			System.out.println("DaoServiceImpl.getUserByName() userDaoRds.findByName() catch exception: " + e.getMessage());
@@ -156,7 +246,7 @@ public class DaoServiceImpl implements DaoService {
 		
 		if (lstUser == null || lstUser.size() == 0) {
 			try {
-				//get from hibernate
+				//get the user from hibernate
 				lstUser = userDaoHbm.findByName(userName);
 			}catch (Exception e) {
 				System.out.println("DaoServiceImpl.getUserByName() userDaoHbm.findByName() catch exception: " + e.getMessage());
@@ -168,7 +258,7 @@ public class DaoServiceImpl implements DaoService {
 			}
 			
 			try {
-				//save into redis
+				//save the user into redis
 				userDaoRds.save(lstUser.get(0));
 			}catch (Exception e) {
 				System.out.println("DaoServiceImpl.getUserByName() userDaoRds.save() catch exception: " + e.getMessage());
@@ -202,12 +292,12 @@ public class DaoServiceImpl implements DaoService {
 		this.userDaoHbm = userDaoHbm;
 	}
 
-	public UserDao getUserDaoRds() {
-		return userDaoRds;
+	public OptionDao getOptionDaoHbm() {
+		return optionDaoHbm;
 	}
 
-	public void setUserDaoRds(UserDao userDaoRds) {
-		this.userDaoRds = userDaoRds;
+	public void setOptionDaoHbm(OptionDao optionDaoHbm) {
+		this.optionDaoHbm = optionDaoHbm;
 	}
 
 	public MenuDao getMenuDaoRds() {
@@ -224,6 +314,22 @@ public class DaoServiceImpl implements DaoService {
 
 	public void setMenuTypeDaoRds(MenuTypeDao menuTypeDaoRds) {
 		this.menuTypeDaoRds = menuTypeDaoRds;
+	}
+
+	public UserDao getUserDaoRds() {
+		return userDaoRds;
+	}
+
+	public void setUserDaoRds(UserDao userDaoRds) {
+		this.userDaoRds = userDaoRds;
+	}
+
+	public OptionDao getOptionDaoRds() {
+		return optionDaoRds;
+	}
+
+	public void setOptionDaoRds(OptionDao optionDaoRds) {
+		this.optionDaoRds = optionDaoRds;
 	}
 
 	private class OptInfo {
@@ -295,7 +401,7 @@ public class DaoServiceImpl implements DaoService {
 					newUser = oi.getNewUser();
 
 					try {
-						//save into hibernate
+						//save the user into hibernate
 						userDaoHbm.save(newUser);
 					}catch (Exception e) {
 						System.out.println("DaoServiceImpl.Consumer.run() userDaoHbm.save() catch exception: " + e.getMessage());

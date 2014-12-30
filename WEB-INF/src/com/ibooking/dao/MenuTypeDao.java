@@ -2,7 +2,7 @@ package com.ibooking.dao;
 
 import java.util.List;
 
-import com.ibooking.po.MenuType;
+import com.ibooking.po.*;
 
 public interface MenuTypeDao {
 	MenuType get(Integer id);
