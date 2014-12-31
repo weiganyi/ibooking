@@ -47,6 +47,40 @@ public class DaoServiceImpl implements DaoService {
 		}
 	}
 	
+	private User getUserByName(String userName) {
+		List<User> lstUser = null;
+		
+		try {
+			//get the user from redis
+			lstUser = userDaoRds.findByName(userName);
+		}catch (Exception e) {
+			System.out.println("DaoServiceImpl.getUserByName() userDaoRds.findByName() catch exception: " + e.getMessage());
+		}
+		
+		if (lstUser == null || lstUser.size() == 0) {
+			try {
+				//get the user from hibernate
+				lstUser = userDaoHbm.findByName(userName);
+			}catch (Exception e) {
+				System.out.println("DaoServiceImpl.getUserByName() userDaoHbm.findByName() catch exception: " + e.getMessage());
+				return null;
+			}
+			
+			if (lstUser == null || lstUser.size() == 0) {
+				return null;
+			}
+			
+			try {
+				//save the user into redis
+				userDaoRds.save(lstUser.get(0));
+			}catch (Exception e) {
+				System.out.println("DaoServiceImpl.getUserByName() userDaoRds.save() catch exception: " + e.getMessage());
+			}
+		}
+		
+		return lstUser.get(0);
+	}
+
 	@Override
 	public boolean insertUser(String userName, 					
 							String userPasswd, 
@@ -232,40 +266,6 @@ public class DaoServiceImpl implements DaoService {
 		}
 		
 		return lstOption.get(0).getValue();
-	}
-	
-	private User getUserByName(String userName) {
-		List<User> lstUser = null;
-		
-		try {
-			//get the user from redis
-			lstUser = userDaoRds.findByName(userName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getUserByName() userDaoRds.findByName() catch exception: " + e.getMessage());
-		}
-		
-		if (lstUser == null || lstUser.size() == 0) {
-			try {
-				//get the user from hibernate
-				lstUser = userDaoHbm.findByName(userName);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.getUserByName() userDaoHbm.findByName() catch exception: " + e.getMessage());
-				return null;
-			}
-			
-			if (lstUser == null || lstUser.size() == 0) {
-				return null;
-			}
-			
-			try {
-				//save the user into redis
-				userDaoRds.save(lstUser.get(0));
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.getUserByName() userDaoRds.save() catch exception: " + e.getMessage());
-			}
-		}
-		
-		return lstUser.get(0);
 	}
 
 	public MenuDao getMenuDaoHbm() {

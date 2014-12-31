@@ -25,8 +25,8 @@ public class LoginProcessAction extends BaseAction {
 			ctx.getSession().put(WebConstant.LOGIN_USER, userName);
 			ctx.getSession().put(WebConstant.LOGIN_AUTH, userAuth);
 
-			procTitle();
-			return procIndex();
+			getTitle();
+			return getIndex();
 		}else {
 			failReason = getText("loginFailure");
 			return RET_FAIL;

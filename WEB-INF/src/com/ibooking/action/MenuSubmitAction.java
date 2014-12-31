@@ -3,7 +3,7 @@ package com.ibooking.action;
 
 import com.ibooking.action.base.*;
 
-public class IndexEnterAction extends BaseAction {
+public class MenuSubmitAction extends BaseAction {
 
 	/**
 	 * 
@@ -12,7 +12,6 @@ public class IndexEnterAction extends BaseAction {
 
 	@Override
 	public String execute() {
-		getTitle();
-		return getIndex();
+		return RET_SUCC;
 	}
 }

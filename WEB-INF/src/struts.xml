@@ -4,15 +4,30 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
-    <constant name="struts.custom.i18n.resources" value="ibooking" />
-    <constant name="struts.objectFactory.spring.autoWire" value="name" />
+    <constant name="struts.custom.i18n.resources" value="ibooking"/>
+    <constant name="struts.objectFactory.spring.autoWire" value="name"/>
 
     <package name="default" namespace="/" extends="struts-default">
-        <default-action-ref name="indexEnter" />
+        <interceptors>
+            <interceptor name="customerAuth" class="com.ibooking.action.authority.CustomerAuthorityInterceptor"/>
+            <interceptor name="adminAuth" class="com.ibooking.action.authority.AdminAuthorityInterceptor"/>
+            <interceptor-stack name="customerStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="customerAuth"/>
+            </interceptor-stack>
+            <interceptor-stack name="adminStack">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="adminAuth"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-action-ref name="indexEnter"/>
 
         <global-results>
             <result name="error">/WEB-INF/jsp/error.jsp</result>
+            <result name="login">/WEB-INF/jsp/login.jsp</result>
         </global-results>
+
         <global-exception-mappings>
             <exception-mapping exception="java.lang.Exception" result="error"/>
         </global-exception-mappings>
@@ -27,14 +42,14 @@
         </action>
 
         <action name="loginProcess" class="com.ibooking.action.LoginProcessAction">
-            <result name="input">/WEB-INF/jsp/login.jsp</result>
             <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="input">/WEB-INF/jsp/login.jsp</result>
             <result name="failure">/WEB-INF/jsp/login.jsp</result>
         </action>
 
         <action name="logoutProcess" class="com.ibooking.action.LogoutProcessAction">
             <result name="success">/WEB-INF/jsp/index.jsp</result>
-            <result name="failure">/WEB-INF/jsp/index.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
         <action name="regEnter">
@@ -42,9 +57,13 @@
         </action>
 
         <action name="regProcess" class="com.ibooking.action.RegProcessAction">
-            <result name="input">/WEB-INF/jsp/reg.jsp</result>
             <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="input">/WEB-INF/jsp/reg.jsp</result>
             <result name="failure">/WEB-INF/jsp/reg.jsp</result>
+        </action>
+
+        <action name="menuSubmit" class="com.ibooking.action.MenuSubmitAction">
+            <interceptor-ref name="customerStack"/>
         </action>
 
     </package>

@@ -18,6 +18,10 @@ body {
     margin: auto;
 }
 
+#ib_navbar_menu_a {
+    color: #fff;
+}
+
 #ib_navbar_login_a, #ib_navbar_reg_a {
     color: #fff;
 }

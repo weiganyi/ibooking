@@ -23,8 +23,8 @@ public class LogoutProcessAction extends BaseAction {
 			ctx.getSession().put(WebConstant.LOGIN_AUTH, null);
 			ctx.getSession().clear();
 
-			procTitle();
-			return procIndex();
+			getTitle();
+			return getIndex();
 		}else {
 			return RET_FAIL;
 		}

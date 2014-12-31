@@ -31,7 +31,7 @@ public class BaseAction extends ActionSupport {
 	private int endPage;
 	private int maxPage;
 
-	public String procTitle() {
+	public String getTitle() {
 		strTitle = daoService.getTitle();
 		if (strTitle == null || strTitle.isEmpty()) {
 			return RET_FAIL;
@@ -40,7 +40,7 @@ public class BaseAction extends ActionSupport {
 		return RET_SUCC;
 	}
 
-	public String procIndex() {
+	public String getIndex() {
 		IndexMenuBean clsIndexMenuBean;
 
 		if (page == null || page.length() == 0) {
