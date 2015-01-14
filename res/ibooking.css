@@ -12,6 +12,11 @@ body {
     text-align: center;
 }
 
+#ib_idx_content_div, #ib_shop_content_div {
+    width: 90%;
+    margin: auto;
+}
+
 /*** navbar.jsp ***/
 #ib_navbar_nav {
     background-color: #428bca;
@@ -32,7 +37,7 @@ body {
     color: white;
 }
 
-/*** navbar.jsp ***/
+/*** pagination.jsp ***/
 #ib_pag_nav {
     margin: 0 auto;
     width: auto;
@@ -74,4 +79,23 @@ body {
 
 .ib_reg_error_div {
     color: red;
+}
+
+/*** shopping.jsp ***/
+.ib_shop_remark_input {
+    width: 80%;
+}
+
+#ib_shop_addr_span {
+    font-weight: bold;
+}
+
+#ib_shop_addr_input {
+    width: 80%;
+}
+
+#ib_shop_submit {
+    margin: 0 auto;
+    width: auto;
+    text-align: center;
 }

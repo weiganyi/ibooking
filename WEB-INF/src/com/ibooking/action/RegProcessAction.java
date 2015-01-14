@@ -19,7 +19,7 @@ public class RegProcessAction extends BaseAction {
 		boolean ret = daoService.insertUser(userName, userPasswd, "customer", userTel, userAddr);
 		if (ret) {
 			getTitle();
-			return getIndex();
+			return getIndexMenu();
 		} else {
 			failReason = getText("regFailure");
 			return RET_FAIL;

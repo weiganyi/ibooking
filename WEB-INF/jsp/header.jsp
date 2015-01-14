@@ -13,4 +13,3 @@
 
         <script type="text/javascript" src="../res/jquery-1.10.1.js"></script>
         <script type="text/javascript" src="../res/bootstrap.min.js"></script>
-        <script type="text/javascript" src="../res/ibooking.js"></script>

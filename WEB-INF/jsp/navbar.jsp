@@ -1,6 +1,6 @@
 <nav id="ib_navbar_nav" class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
-        <a href="indexEnter" id="ib_navbar_link_index_a" class="navbar-brand"><s:property value="strTitle" /></a>
+        <a href="indexPageEnter" id="ib_navbar_link_index_a" class="navbar-brand"><s:property value="strTitle" /></a>
         <ul class="nav navbar-nav navbar-right">
             <s:if test="#session.loginUser!=null">
                 <li class="dropdown">
@@ -8,16 +8,16 @@
                         <s:text name="navOptions" /> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">
-                        <li><a href="#"><s:text name="navOptShop" /></a></li>
-                        <li><a href="#"><s:text name="navOptOrder" /></a></li>
+                        <li><a href="shoppingPageEnter"><s:text name="navOptShop" /></a></li>
+                        <li><a href="orderListPageEnter"><s:text name="navOptOrder" /></a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><s:text name="navOptUser" /></a></li>
+                        <li><a href="perInfoPageEnter"><s:text name="navOptUser" /></a></li>
                     </ul>
                 </li>
             </s:if>
             <s:if test="#session.loginUser==null">
                 <li>
-                    <a href="loginEnter" id="ib_navbar_login_a" class="navbar-link">
+                    <a href="loginPageEnter" id="ib_navbar_login_a" class="navbar-link">
                         <s:text name="navLoginBtn" />
                     </a>
                 </li>
@@ -30,7 +30,7 @@
                 </li>
             </s:else>
             <li>
-                <a href="regEnter" id="ib_navbar_reg_a" class="navbar-link">
+                <a href="regPageEnter" id="ib_navbar_reg_a" class="navbar-link">
                     <s:text name="navRegBtn" />
                 </a>
             </li>

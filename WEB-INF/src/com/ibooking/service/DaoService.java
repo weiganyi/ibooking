@@ -14,5 +14,20 @@ public interface DaoService {
 					String userAddr);
 	
 	String getTitle();
-	IndexMenuBean getIndexMenuBean(int iCurrPage);
+	IndexPageBean getIndexPageBean(int iCurrPage, String userName);
+	
+	int changeShoppingAmount(String userName, 
+							String menuName, 
+							String menuPrice,
+							boolean isInc);
+	
+	void deleteShoppingAmount(String userName, 
+						String menuName);
+	void changeShoppingRemark(String userName, 
+							String menuName, 
+							String remark);
+	void changeUserAddress(String userName, 
+						String address);
+	String getUserAddrByName(String userName);
+	ShoppingPageBean getShoppingPageBean(int iCurrPage, String userName);
 }

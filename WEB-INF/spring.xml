@@ -21,6 +21,7 @@
                 <value>com/ibooking/po/Menu.hbm.xml</value>
                 <value>com/ibooking/po/User.hbm.xml</value>
                 <value>com/ibooking/po/Option.hbm.xml</value>
+                <value>com/ibooking/po/Shopping.hbm.xml</value>
             </list>
         </property>
     </bean>
@@ -31,10 +32,9 @@
     <bean id="menuDaoHbm" class="com.ibooking.dao.impl.MenuDaoHibernate" parent="daoTemplate"/>
     <bean id="userDaoHbm" class="com.ibooking.dao.impl.UserDaoHibernate" parent="daoTemplate"/>
     <bean id="optionDaoHbm" class="com.ibooking.dao.impl.OptionDaoHibernate" parent="daoTemplate"/>
+    <bean id="shoppingDaoHbm" class="com.ibooking.dao.impl.ShoppingDaoHibernate" parent="daoTemplate"/>
 
     <!-- Dao Redis -->
-    <bean id="userDaoRds" class="com.ibooking.dao.impl.UserDaoRedis" p:userDaoHbm-ref="userDaoHbm"
-        init-method="init"/>
     <bean id="menuDaoRds" class="com.ibooking.dao.impl.MenuDaoRedis" p:menuDaoHbm-ref="menuDaoHbm"
         init-method="init"/>
     <bean id="menuTypeDaoRds" class="com.ibooking.dao.impl.MenuTypeDaoRedis" p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
@@ -49,9 +49,9 @@
         p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
         p:menuTypeDaoRds-ref="menuTypeDaoRds"
         p:userDaoHbm-ref="userDaoHbm"
-        p:userDaoRds-ref="userDaoRds"
         p:optionDaoHbm-ref="optionDaoHbm"
-        p:optionDaoRds-ref="optionDaoRds"/>
+        p:optionDaoRds-ref="optionDaoRds"
+        p:shoppingDaoHbm-ref="shoppingDaoHbm"/>
     <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
         parent="serviceTemplate"
         init-method="init"

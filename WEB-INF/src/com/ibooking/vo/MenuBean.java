@@ -4,6 +4,7 @@ public class MenuBean {
 	private String name;
 	private String price;
 	private String addr;
+	private String amount;
 
 	public String getName() {
 		return name;
@@ -22,5 +23,11 @@ public class MenuBean {
 	}
 	public void setAddr(String addr) {
 		this.addr = addr;
+	}
+	public String getAmount() {
+		return amount;
+	}
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 }

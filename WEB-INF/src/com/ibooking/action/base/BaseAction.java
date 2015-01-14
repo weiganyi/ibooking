@@ -3,8 +3,10 @@ package com.ibooking.action.base;
 import java.util.ArrayList;
 
 import com.ibooking.service.*;
-import com.ibooking.vo.IndexMenuBean;
+import com.ibooking.util.WebConstant;
+import com.ibooking.vo.IndexPageBean;
 import com.ibooking.vo.MenuTypeBean;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 
@@ -23,13 +25,16 @@ public class BaseAction extends ActionSupport {
 
 	protected String strTitle;
 
-	private static final Integer defaultMinPageNum = 1;
-	private String page;
-	private ArrayList<MenuTypeBean> lstMenuTypeBean;
-	private int currPage;
-	private int startPage;
-	private int endPage;
-	private int maxPage;
+	protected String page;
+
+	protected ArrayList<MenuTypeBean> lstMenuTypeBean;
+
+	protected static final Integer defaultMinPageNum = 1;
+	protected int currPage;
+	protected int startPage;
+	protected int endPage;
+	protected int maxPage;
+	protected String destPage;
 
 	public String getTitle() {
 		strTitle = daoService.getTitle();
@@ -40,8 +45,8 @@ public class BaseAction extends ActionSupport {
 		return RET_SUCC;
 	}
 
-	public String getIndex() {
-		IndexMenuBean clsIndexMenuBean;
+	public String getIndexMenu() {
+		IndexPageBean clsIndexPageBean;
 
 		if (page == null || page.length() == 0) {
 			currPage =  defaultMinPageNum;
@@ -49,12 +54,16 @@ public class BaseAction extends ActionSupport {
 			currPage = Integer.valueOf(page);
 		}
 		
-		clsIndexMenuBean = daoService.getIndexMenuBean(currPage);
-		if (clsIndexMenuBean != null && clsIndexMenuBean.getLst().size() != 0) {
-			lstMenuTypeBean = clsIndexMenuBean.getLst();
-			startPage = clsIndexMenuBean.getStartPage();
-			endPage = clsIndexMenuBean.getEndPage();
-			maxPage = clsIndexMenuBean.getMaxPage();
+		ActionContext ctx = ActionContext.getContext();
+		String userName = (String)ctx.getSession().get(WebConstant.LOGIN_USER);
+		
+		clsIndexPageBean = daoService.getIndexPageBean(currPage, userName);
+		if (clsIndexPageBean != null && clsIndexPageBean.getLst().size() != 0) {
+			lstMenuTypeBean = clsIndexPageBean.getLst();
+			startPage = clsIndexPageBean.getStartPage();
+			endPage = clsIndexPageBean.getEndPage();
+			maxPage = clsIndexPageBean.getMaxPage();
+			destPage = "indexPageEnter";
 
 			return RET_SUCC;
 		}else {
@@ -128,5 +137,13 @@ public class BaseAction extends ActionSupport {
 
 	public void setMaxPage(int maxPage) {
 		this.maxPage = maxPage;
+	}
+
+	public String getDestPage() {
+		return destPage;
+	}
+
+	public void setDestPage(String destPage) {
+		this.destPage = destPage;
 	}
 }

@@ -3,12 +3,11 @@ package com.ibooking.dao;
 import java.util.List;
 
 import com.ibooking.po.*;
-import com.ibooking.util.RedisException;
 
 public interface UserDao {
 	User get(Integer id);
 	
-	Integer save(User user) throws RedisException;
+	Integer save(User user);
 	
 	void update(User user);
 	

@@ -21,7 +21,7 @@
             </interceptor-stack>
         </interceptors>
 
-        <default-action-ref name="indexEnter"/>
+        <default-action-ref name="indexPageEnter"/>
 
         <global-results>
             <result name="error">/WEB-INF/jsp/error.jsp</result>
@@ -32,12 +32,12 @@
             <exception-mapping exception="java.lang.Exception" result="error"/>
         </global-exception-mappings>
 
-        <action name="indexEnter" class="com.ibooking.action.IndexEnterAction">
+        <action name="indexPageEnter" class="com.ibooking.action.IndexPageEnterAction">
             <result name="success">/WEB-INF/jsp/index.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
-        <action name="loginEnter">
+        <action name="loginPageEnter">
             <result type="dispatcher">/WEB-INF/jsp/login.jsp</result>
         </action>
 
@@ -52,7 +52,7 @@
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
-        <action name="regEnter">
+        <action name="regPageEnter">
             <result type="dispatcher">/WEB-INF/jsp/reg.jsp</result>
         </action>
 
@@ -64,6 +64,22 @@
 
         <action name="menuSubmit" class="com.ibooking.action.MenuSubmitAction">
             <interceptor-ref name="customerStack"/>
+            <result name="success" type="stream">
+                <param name="contentType">text/html</param>
+                <param name="inputName">result</param>
+            </result>
+        </action>
+
+        <action name="shoppingPageEnter" class="com.ibooking.action.ShoppingPageEnterAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/shopping.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="shoppingChange" class="com.ibooking.action.ShoppingChangeAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/shopping_content.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
     </package>

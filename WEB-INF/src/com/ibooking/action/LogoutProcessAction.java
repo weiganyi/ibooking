@@ -24,7 +24,7 @@ public class LogoutProcessAction extends BaseAction {
 			ctx.getSession().clear();
 
 			getTitle();
-			return getIndex();
+			return getIndexMenu();
 		}else {
 			return RET_FAIL;
 		}

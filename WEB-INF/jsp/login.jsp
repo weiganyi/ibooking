@@ -30,7 +30,7 @@
                 <button id="ib_login_submit_btn" type="submit" class="btn btn-primary btn-lg">
                     <s:text name="loginSubmit" />
                 </button>
-                <a id="ib_login_reg_btn" href="regEnter" class="btn btn-primary btn-lg" role="button">
+                <a id="ib_login_reg_btn" href="regPageEnter" class="btn btn-primary btn-lg" role="button">
                     <s:text name="loginReg" />
                 </a>
             </form>

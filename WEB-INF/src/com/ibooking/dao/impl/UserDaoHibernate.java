@@ -1,33 +1,13 @@
 package com.ibooking.dao.impl;
 
-import java.math.BigInteger;
 import java.util.List;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.*;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.ibooking.dao.UserDao;
 import com.ibooking.po.User;
 
 public class UserDaoHibernate extends HibernateDaoSupport implements UserDao {
-	private static final String TABLE_NAME="ib_user";
-
-	@SuppressWarnings("unchecked")
-	public List<BigInteger> getAutoIncrement() {
-		Configuration conf = new Configuration().configure();
-		SessionFactory sf = conf.buildSessionFactory();
-		Session sess = sf.openSession();
-
-		String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=:table"; 
-		List<BigInteger> lst = sess.createSQLQuery(sql).setString("table", TABLE_NAME).list();
-
-		sess.close();
-		sf.close();
-		return lst;
-	}
-	
 	@Override
 	public User get(Integer id) {
 		return getHibernateTemplate().get(User.class, id);

@@ -26,7 +26,7 @@ public class LoginProcessAction extends BaseAction {
 			ctx.getSession().put(WebConstant.LOGIN_AUTH, userAuth);
 
 			getTitle();
-			return getIndex();
+			return getIndexMenu();
 		}else {
 			failReason = getText("loginFailure");
 			return RET_FAIL;

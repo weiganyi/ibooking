@@ -2,7 +2,7 @@ package com.ibooking.vo;
 
 import java.util.ArrayList;
 
-public class IndexMenuBean {
+public class IndexPageBean {
 	private ArrayList<MenuTypeBean> lst;
 	private int startPage;
 	private int endPage;
