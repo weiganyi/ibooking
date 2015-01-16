@@ -12,7 +12,7 @@ public class IndexPageEnterAction extends BaseAction {
 
 	@Override
 	public String execute() {
-		getTitle();
-		return getIndexMenu();
+		fillTitle();
+		return fillIndexPage();
 	}
 }

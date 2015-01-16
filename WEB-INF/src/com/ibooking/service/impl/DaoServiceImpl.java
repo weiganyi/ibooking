@@ -1,6 +1,7 @@
 package com.ibooking.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,6 +17,8 @@ public class DaoServiceImpl implements DaoService {
 	private UserDao userDaoHbm;
 	private OptionDao optionDaoHbm;
 	private ShoppingDao shoppingDaoHbm;
+	private OrderDao orderDaoHbm;
+	private OrderDetailDao orderDetailDaoHbm;
 	
 	private MenuDao menuDaoRds;
 	private MenuTypeDao menuTypeDaoRds;
@@ -50,13 +53,8 @@ public class DaoServiceImpl implements DaoService {
 	private User getUserByName(String userName) {
 		List<User> lstUser = null;
 		
-		try {
-			//get the user from hibernate
-			lstUser = userDaoHbm.findByName(userName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getUserByName() userDaoHbm.findByName() catch exception: " + e.getMessage());
-		}
-		
+		//get the user from hibernate
+		lstUser = userDaoHbm.findByName(userName);
 		if (lstUser == null || lstUser.size() == 0) {
 			return null;
 		}
@@ -76,21 +74,14 @@ public class DaoServiceImpl implements DaoService {
 		}
 		
 		user = new User();
-		
 		user.setName(userName);
 		user.setPasswd(userPasswd);
 		user.setAuth(userAuth);
 		user.setTel(userTel);
 		user.setAddr(userAddr);
 		user.setId(0);
-
-		try {
-			//save the user into hibernate
-			userDaoHbm.save(user);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.insertUser() userDaoHbm.save() catch exception: " + e.getMessage());
-			return false;
-		}
+		//save the user into hibernate
+		userDaoHbm.save(user);
 		
 		return true;
 	}
@@ -100,12 +91,8 @@ public class DaoServiceImpl implements DaoService {
 		List<Option> lstOption = null;
 		String optionName = "title";
 		
-		try {
-			//get the title from redis
-			lstOption = optionDaoRds.findByName(optionName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getTitle() optionDaoRds.findByName() catch exception: " + e.getMessage());
-		}
+		//get the title from redis
+		lstOption = optionDaoRds.findByName(optionName);
 		
 		return lstOption.get(0).getValue();
 	}
@@ -133,26 +120,14 @@ public class DaoServiceImpl implements DaoService {
 		int iMaxMenuOneLine = 4;
 		int iMenuNum = 0;
 		
-		try {
-			//get the menu from redis
-			lstMenu = menuDaoRds.findAll();
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getIndexPageBean() menuDaoRds.findAll() catch exception: " + e.getMessage());
-		}
+		//get the menu from redis
+		lstMenu = menuDaoRds.findAll();
 		
-		try {
-			//get the menutype from redis
-			lstMenuType = menuTypeDaoRds.findAll();
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getIndexPageBean() menuTypeDaoRds.findAll() catch exception: " + e.getMessage());
-		}
+		//get the menutype from redis
+		lstMenuType = menuTypeDaoRds.findAll();
 		
-		try {
-			//get the idx_menu_lines from redis
-			lstOption = optionDaoRds.findByName(optionName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getIndexPageBean() optionDaoRds.findByName() catch exception: " + e.getMessage());
-		}
+		//get the idx_menu_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
 		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
 
 		//iterator the Menu and MenuType
@@ -269,14 +244,8 @@ public class DaoServiceImpl implements DaoService {
 				}
 			}
 			shopping.setAmount(amount);
-	
-			try {
-				//save the shopping into hibernate
-				shoppingDaoHbm.update(shopping);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.changeShoppingAmount() shoppingDaoHbm.update() catch exception: " + e.getMessage());
-				return WebConstant.INVALID_VALUE;
-			}
+			//save the shopping into hibernate
+			shoppingDaoHbm.update(shopping);
 		}else {
 			//create a new Shopping and insert it
 			shopping = new Shopping();
@@ -288,14 +257,8 @@ public class DaoServiceImpl implements DaoService {
 			amount = 1;
 			shopping.setAmount(amount);
 			shopping.setRemark("");
-	
-			try {
-				//save the shopping into hibernate
-				shoppingDaoHbm.save(shopping);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.changeShoppingAmount() shoppingDaoHbm.save() catch exception: " + e.getMessage());
-				return WebConstant.INVALID_VALUE;
-			}
+			//save the shopping into hibernate
+			shoppingDaoHbm.save(shopping);
 		}
 		
 		return amount;
@@ -304,13 +267,8 @@ public class DaoServiceImpl implements DaoService {
 	private Shopping getShoppingByName(String userName, String menuName) {
 		List<Shopping> lstShopping = null;
 		
-		try {
-			//get the shopping from hibernate
-			lstShopping = shoppingDaoHbm.findByName(userName, menuName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getShoppingByName() shoppingDaoHbm.findByName() catch exception: " + e.getMessage());
-		}
-		
+		//get the shopping from hibernate
+		lstShopping = shoppingDaoHbm.findByName(userName, menuName);
 		if (lstShopping == null || lstShopping.size() == 0) {
 			return null;
 		}
@@ -329,13 +287,8 @@ public class DaoServiceImpl implements DaoService {
 		
 		Shopping shopping = getShoppingByName(userName, menuName);
 		if (shopping != null) {
-			try {
-				//delete the shopping into hibernate
-				shoppingDaoHbm.delete(shopping);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.deleteShoppingAmount() shoppingDaoHbm.delete() catch exception: " + e.getMessage());
-				return;
-			}
+			//delete the shopping into hibernate
+			shoppingDaoHbm.delete(shopping);
 		}
 		
 		return;
@@ -354,14 +307,8 @@ public class DaoServiceImpl implements DaoService {
 		Shopping shopping = getShoppingByName(userName, menuName);
 		if (shopping != null) {
 			shopping.setRemark(remark);
-	
-			try {
-				//save the shopping into hibernate
-				shoppingDaoHbm.update(shopping);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.changeShoppingRemark() shoppingDaoHbm.update() catch exception: " + e.getMessage());
-				return;
-			}
+			//update the shopping into hibernate
+			shoppingDaoHbm.update(shopping);
 		}
 	}
 	
@@ -376,14 +323,8 @@ public class DaoServiceImpl implements DaoService {
 		User user = getUserByName(userName);
 		if (user != null) {
 			user.setAddr(address);
-	
-			try {
-				//save the user into hibernate
-				userDaoHbm.update(user);
-			}catch (Exception e) {
-				System.out.println("DaoServiceImpl.changeUserAddress() userDaoHbm.update() catch exception: " + e.getMessage());
-				return;
-			}
+			//update the user into hibernate
+			userDaoHbm.update(user);
 		}
 	}
 
@@ -391,13 +332,8 @@ public class DaoServiceImpl implements DaoService {
 	public String getUserAddrByName(String userName) {
 		List<User> lstUser = null;
 		
-		try {
-			//get the user from hibernate
-			lstUser = userDaoHbm.findByName(userName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getUserAddrByName() userDaoHbm.findByName() catch exception: " + e.getMessage());
-		}
-		
+		//get the user from hibernate
+		lstUser = userDaoHbm.findByName(userName);
 		if (lstUser == null || lstUser.size() == 0) {
 			return null;
 		}
@@ -421,20 +357,14 @@ public class DaoServiceImpl implements DaoService {
 
 		int iMaxLineOnePage = 0;
 		int iLineNum = 0;
+
+		int totalPrice = 0;
+
+		//get the shopping from hibernate
+		lstShopping = shoppingDaoHbm.findByUserName(userName);
 		
-		try {
-			//get the shopping from hibernate
-			lstShopping = shoppingDaoHbm.findByUserName(userName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getShoppingPageBean() shoppingDaoHbm.findByUserName() catch exception: " + e.getMessage());
-		}
-		
-		try {
-			//get the tbl_page_lines from redis
-			lstOption = optionDaoRds.findByName(optionName);
-		}catch (Exception e) {
-			System.out.println("DaoServiceImpl.getShoppingPageBean() optionDaoRds.findByName() catch exception: " + e.getMessage());
-		}
+		//get the tbl_page_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
 		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
 
 		//iterator the Shopping
@@ -456,8 +386,11 @@ public class DaoServiceImpl implements DaoService {
 				
 				lstShoppingBean.add(shoppingBean);
 			}
+			
+			totalPrice += shopping.getAmount() * shopping.getMenuPrice();
 		}
 		clsShoppingPageBean.setLst(lstShoppingBean);
+		clsShoppingPageBean.setTotalPrice(totalPrice);
 
 		// calc the startpage and endpage
 		if (iPageNum <= defaultMaxPagination) {
@@ -482,7 +415,76 @@ public class DaoServiceImpl implements DaoService {
 
 		return clsShoppingPageBean;
 	}
+	
+	@Override
+	public boolean submitShoppingTrans(String userName) {
+		List<Shopping> lstShopping = null;
+		
+		if (userName == null || userName.length() == 0) {
+			System.out.println("DaoServiceImpl.submitShoppingTrans() input param is null");
+			return false;
+		}
+		
+		//get the shopping from hibernate
+		lstShopping = shoppingDaoHbm.findByUserName(userName);
+		
+		//create a new order and save it
+		Order order = new Order();
+		order.setId(0);
+		order.setUserName(userName);
+		Date date = new Date();
+		order.setTime(date);
+		order.setAdminName("");
+		order.setAccept(0);
+		//save the order into hibernate
+		orderDaoHbm.save(order);
+		
+		//create new orderDetail and save them
+		int orderId = order.getId();
+		for (Shopping shopping : lstShopping) {
+			OrderDetail orderDetail = new OrderDetail();
+			orderDetail.setId(0);
+			orderDetail.setOrderId(orderId);
+			orderDetail.setMenuName(shopping.getMenuName());
+			orderDetail.setMenuPrice(shopping.getMenuPrice());
+			orderDetail.setAmount(shopping.getAmount());
+			orderDetail.setRemark(shopping.getRemark());
+			//save the orderDetail into hibernate
+			orderDetailDaoHbm.save(orderDetail);
+		}
+		
+		//delete all shopping for this user
+		for (Shopping shopping : lstShopping) {
+			//delete the shopping from hibernate
+			shoppingDaoHbm.delete(shopping);
+		}
+		
+		return true;
+	}
 
+	public void init() {
+		//create the queue
+		q = new LinkedBlockingQueue<OptInfo>();
+		
+		//create the thread
+		Consumer worker = new Consumer();
+		thd = new Thread(worker, "Consumer");
+		thd.start();
+	}
+	
+	public void destory() {
+		//close the thread
+		thd.interrupt();
+
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.INVALID);
+		try {
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.destory() q.put() catch exception: " + e.getMessage());
+		}
+	}
+	
 	public MenuDao getMenuDaoHbm() {
 		return menuDaoHbm;
 	}
@@ -523,6 +525,22 @@ public class DaoServiceImpl implements DaoService {
 		this.shoppingDaoHbm = shoppingDaoHbm;
 	}
 
+	public OrderDao getOrderDaoHbm() {
+		return orderDaoHbm;
+	}
+
+	public void setOrderDaoHbm(OrderDao orderDaoHbm) {
+		this.orderDaoHbm = orderDaoHbm;
+	}
+
+	public OrderDetailDao getOrderDetailDaoHbm() {
+		return orderDetailDaoHbm;
+	}
+
+	public void setOrderDetailDaoHbm(OrderDetailDao orderDetailDaoHbm) {
+		this.orderDetailDaoHbm = orderDetailDaoHbm;
+	}
+
 	public MenuDao getMenuDaoRds() {
 		return menuDaoRds;
 	}
@@ -547,29 +565,6 @@ public class DaoServiceImpl implements DaoService {
 		this.optionDaoRds = optionDaoRds;
 	}
 
-	public void init() {
-		//create the queue
-		q = new LinkedBlockingQueue<OptInfo>();
-		
-		//create the thread
-		Consumer worker = new Consumer();
-		thd = new Thread(worker, "Consumer");
-		thd.start();
-	}
-	
-	public void destory() {
-		//close the thread
-		thd.interrupt();
-
-		OptInfo oi = new OptInfo();
-		oi.setOpt(OPT.INVALID);
-		try {
-			q.put(oi);
-		}catch (InterruptedException e) {
-			System.out.println("DaoServiceImpl.destory() q.put() catch exception: " + e.getMessage());
-		}
-	}
-	
 	private class OptInfo {
 		private OPT opt;
 

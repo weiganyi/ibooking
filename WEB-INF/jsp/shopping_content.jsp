@@ -43,7 +43,17 @@
 </table>
 </br>
 <div class="input-group">
-    <span id="ib_shop_addr_span" class="input-group-addon"><s:text name="shopAddress" /> </span>
+    <span id="ib_shop_price_span" class="input-group-addon"><s:text name="shopTotalPrice" /></span>
+    <input type="text" 
+        address='<s:property value="totalPrice" />' 
+        id="ib_shop_price_input"
+        class="form-control" 
+        value="<s:property value="totalPrice" />"
+        readOnly="true" />
+</div>
+</br>
+<div class="input-group">
+    <span id="ib_shop_addr_span" class="input-group-addon"><s:text name="shopAddress" /></span>
     <input type="text" 
         address='<s:property value="strAddress" />' 
         id="ib_shop_addr_input"

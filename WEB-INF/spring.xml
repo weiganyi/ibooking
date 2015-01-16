@@ -22,6 +22,8 @@
                 <value>com/ibooking/po/User.hbm.xml</value>
                 <value>com/ibooking/po/Option.hbm.xml</value>
                 <value>com/ibooking/po/Shopping.hbm.xml</value>
+                <value>com/ibooking/po/Order.hbm.xml</value>
+                <value>com/ibooking/po/OrderDetail.hbm.xml</value>
             </list>
         </property>
     </bean>
@@ -33,6 +35,8 @@
     <bean id="userDaoHbm" class="com.ibooking.dao.impl.UserDaoHibernate" parent="daoTemplate"/>
     <bean id="optionDaoHbm" class="com.ibooking.dao.impl.OptionDaoHibernate" parent="daoTemplate"/>
     <bean id="shoppingDaoHbm" class="com.ibooking.dao.impl.ShoppingDaoHibernate" parent="daoTemplate"/>
+    <bean id="orderDaoHbm" class="com.ibooking.dao.impl.OrderDaoHibernate" parent="daoTemplate"/>
+    <bean id="orderDetailDaoHbm" class="com.ibooking.dao.impl.OrderDetailDaoHibernate" parent="daoTemplate"/>
 
     <!-- Dao Redis -->
     <bean id="menuDaoRds" class="com.ibooking.dao.impl.MenuDaoRedis" p:menuDaoHbm-ref="menuDaoHbm"
@@ -45,16 +49,32 @@
     <!-- Dao Service -->
     <bean id="serviceTemplate" abstract="true" lazy-init="true" 
         p:menuDaoHbm-ref="menuDaoHbm"
-        p:menuDaoRds-ref="menuDaoRds"
         p:menuTypeDaoHbm-ref="menuTypeDaoHbm"
-        p:menuTypeDaoRds-ref="menuTypeDaoRds"
         p:userDaoHbm-ref="userDaoHbm"
         p:optionDaoHbm-ref="optionDaoHbm"
-        p:optionDaoRds-ref="optionDaoRds"
-        p:shoppingDaoHbm-ref="shoppingDaoHbm"/>
+        p:shoppingDaoHbm-ref="shoppingDaoHbm"
+        p:orderDaoHbm-ref="orderDaoHbm"
+        p:orderDetailDaoHbm-ref="orderDetailDaoHbm"
+        p:menuDaoRds-ref="menuDaoRds"
+        p:menuTypeDaoRds-ref="menuTypeDaoRds"
+        p:optionDaoRds-ref="optionDaoRds"/>
     <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
         parent="serviceTemplate"
         init-method="init"
         destroy-method="destory"/>
 
+    <!-- Dao Transaction -->
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+        p:sessionFactory-ref="sessionFactory"/>
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*Trans"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="daoPointcut" 
+            expression="execution(* com.ibooking.service.impl.DaoServiceImpl.*Trans(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="daoPointcut"/>
+    </aop:config>
+    
 </beans>

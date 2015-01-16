@@ -1,31 +1,29 @@
 package com.ibooking.action;
 
-import com.ibooking.action.base.*;
-import com.ibooking.util.*;
+import java.io.UnsupportedEncodingException;
 
+import com.ibooking.action.base.*;
+import com.ibooking.util.WebConstant;
 import com.opensymphony.xwork2.ActionContext;
 
-public class LogoutProcessAction extends BaseAction {
+public class ShoppingSubmitAction extends BaseAction {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Override
-	public String execute() {
+	public String execute() throws UnsupportedEncodingException {
 		ActionContext ctx = ActionContext.getContext();
 		String userName = (String)ctx.getSession().get(WebConstant.LOGIN_USER);
-		
-		if (!userName.isEmpty()) {
-			//clear the user info
-			ctx.getSession().put(WebConstant.LOGIN_USER, null);
-			ctx.getSession().put(WebConstant.LOGIN_AUTH, null);
-			ctx.getSession().clear();
 
+		if (daoService.submitShoppingTrans(userName)) {
+			
 			fillTitle();
 			return fillIndexPage();
 		}else {
+			failReason = getText("shopSubmitFailure");
 			return RET_FAIL;
 		}
 	}

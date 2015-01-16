@@ -1,13 +1,13 @@
 package com.ibooking.util;
 
-public class RedisException extends Exception {
+public class TransException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public RedisException(String msg) {
+	public TransException(String msg) {
 		super(msg);
 	}
 }

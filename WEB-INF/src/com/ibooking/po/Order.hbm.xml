@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate//Hibernate Mapping DTD 3.0//EN" 
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.ibooking.po">
+    <class name="Order" table="ib_order">
+        <id name="id" column="order_id" type="integer">
+            <generator class="identity"/>
+        </id>
+        <property name="userName" column="order_user_name" type="string"/>
+        <property name="time">
+            <column name="order_time" sql-type="datetime"/>
+        </property>
+        <property name="adminName" column="order_admin_name" type="string"/>
+        <property name="accept" column="order_accept" type="integer"/>
+    </class>
+</hibernate-mapping>

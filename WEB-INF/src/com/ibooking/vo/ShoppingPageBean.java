@@ -9,6 +9,7 @@ public class ShoppingPageBean {
 	private int startPage;
 	private int endPage;
 	private int maxPage;
+	private int totalPrice;
 
 	public ArrayList<Shopping> getLst() {
 		return lst;
@@ -33,5 +34,11 @@ public class ShoppingPageBean {
 	}
 	public void setMaxPage(int maxPage) {
 		this.maxPage = maxPage;
+	}
+	public int getTotalPrice() {
+		return totalPrice;
+	}
+	public void setTotalPrice(int totalPrice) {
+		this.totalPrice = totalPrice;
 	}
 }

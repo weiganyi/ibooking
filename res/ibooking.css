@@ -86,8 +86,12 @@ body {
     width: 80%;
 }
 
-#ib_shop_addr_span {
+#ib_shop_price_span, #ib_shop_addr_span {
     font-weight: bold;
+}
+
+#ib_shop_price_input {
+    width: 20%;
 }
 
 #ib_shop_addr_input {

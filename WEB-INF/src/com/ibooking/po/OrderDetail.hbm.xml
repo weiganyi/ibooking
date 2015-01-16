@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate//Hibernate Mapping DTD 3.0//EN" 
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.ibooking.po">
+    <class name="OrderDetail" table="ib_order_detail">
+        <id name="id" column="detail_id" type="integer">
+            <generator class="identity"/>
+        </id>
+        <property name="orderId" column="detail_order_id" type="integer"/>
+        <property name="menuName" column="detail_menu_name" type="string"/>
+        <property name="menuPrice" column="detail_menu_price" type="integer"/>
+        <property name="amount" column="detail_amount" type="integer"/>
+        <property name="remark" column="detail_remark" type="string"/>
+    </class>
+</hibernate-mapping>

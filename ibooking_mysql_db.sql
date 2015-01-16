@@ -79,7 +79,7 @@ CREATE TABLE `ib_option` (
   `option_name` char(255) NOT NULL,
   `option_value` char(255) NOT NULL,
   PRIMARY KEY (`option_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +88,7 @@ CREATE TABLE `ib_option` (
 
 LOCK TABLES `ib_option` WRITE;
 /*!40000 ALTER TABLE `ib_option` DISABLE KEYS */;
-INSERT INTO `ib_option` VALUES (1,'title','我的小店'),(2,'idx_menu_lines','3');
+INSERT INTO `ib_option` VALUES (1,'title','我的小店'),(2,'idx_menu_lines','3'),(3,'tbl_page_lines','2');
 /*!40000 ALTER TABLE `ib_option` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -106,7 +106,7 @@ CREATE TABLE `ib_order` (
   `order_admin_name` char(255) NOT NULL,
   `order_accept` int(1) NOT NULL,
   PRIMARY KEY (`order_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,6 +115,7 @@ CREATE TABLE `ib_order` (
 
 LOCK TABLES `ib_order` WRITE;
 /*!40000 ALTER TABLE `ib_order` DISABLE KEYS */;
+INSERT INTO `ib_order` VALUES (4,'admin','2015-01-16 17:06:02','',0);
 /*!40000 ALTER TABLE `ib_order` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,7 +134,7 @@ CREATE TABLE `ib_order_detail` (
   `detail_amount` int(16) NOT NULL,
   `detail_remark` char(255) NOT NULL,
   PRIMARY KEY (`detail_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,6 +143,7 @@ CREATE TABLE `ib_order_detail` (
 
 LOCK TABLES `ib_order_detail` WRITE;
 /*!40000 ALTER TABLE `ib_order_detail` DISABLE KEYS */;
+INSERT INTO `ib_order_detail` VALUES (7,4,'米饭',2,1,''),(8,4,'剁椒鱼头',15,1,'');
 /*!40000 ALTER TABLE `ib_order_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -160,7 +162,7 @@ CREATE TABLE `ib_shopping` (
   `shopping_amount` int(16) NOT NULL,
   `shopping_remark` char(255) NOT NULL,
   PRIMARY KEY (`shopping_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +190,7 @@ CREATE TABLE `ib_user` (
   `user_addr` char(255) NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `user_name` (`user_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +199,7 @@ CREATE TABLE `ib_user` (
 
 LOCK TABLES `ib_user` WRITE;
 /*!40000 ALTER TABLE `ib_user` DISABLE KEYS */;
-INSERT INTO `ib_user` VALUES (1,'admin','123456','admin','12345678901','蛇口'),(30,'weigy','123456','customer','13760209518','宝安西乡大益广场2栋16座2B');
+INSERT INTO `ib_user` VALUES (1,'admin','123456','admin','12345678901','蛇口百盈医疗器械园'),(31,'weigy','123456','customer','13760209518','宝安西乡大益广场2栋16座2B');
 /*!40000 ALTER TABLE `ib_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -214,4 +216,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-12-30 15:45:42
+-- Dump completed on 2015-01-16 17:08:06

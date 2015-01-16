@@ -4,7 +4,7 @@
         <%-- the header --%>
         <%@ include file="/WEB-INF/jsp/header.jsp" %>
 
-        <title><s:text name="indexTitle" /></title>
+        <title><s:text name="shopTitle" /></title>
     </head>
     <body>
         <%-- the navbar --%>

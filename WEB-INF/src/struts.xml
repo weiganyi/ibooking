@@ -82,5 +82,11 @@
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
+        <action name="shoppingSubmit" class="com.ibooking.action.ShoppingSubmitAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/orderlist.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
     </package>
 </struts>
