@@ -19,9 +19,9 @@ public class ShoppingSubmitAction extends BaseAction {
 		String userName = (String)ctx.getSession().get(WebConstant.LOGIN_USER);
 
 		if (daoService.submitShoppingTrans(userName)) {
-			
 			fillTitle();
-			return fillIndexPage();
+
+			return fillOrderListPage();
 		}else {
 			failReason = getText("shopSubmitFailure");
 			return RET_FAIL;

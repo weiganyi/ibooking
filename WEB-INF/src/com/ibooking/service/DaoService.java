@@ -1,5 +1,8 @@
 package com.ibooking.service;
 
+import java.util.ArrayList;
+
+import com.ibooking.po.OrderDetail;
 import com.ibooking.vo.*;
 
 public interface DaoService {
@@ -23,7 +26,7 @@ public interface DaoService {
 							boolean isInc);
 	
 	//shopping.jsp
-	void deleteShoppingAmount(String userName, 
+	void deleteShopping(String userName, 
 						String menuName);
 	void changeShoppingRemark(String userName, 
 							String menuName, 
@@ -34,5 +37,10 @@ public interface DaoService {
 	ShoppingPageBean getShoppingPageBean(int iCurrPage, String userName);
 	boolean submitShoppingTrans(String userName);
 
-	//
+	//orderlist.jsp
+	OrderListPageBean getOrderListPageBean(int iCurrPage, String userName);
+	void deleteOrderTrans(String orderId);
+	
+	//orderdetail.jsp
+	ArrayList<OrderDetail> getOrderDetail(int orderId);
 }

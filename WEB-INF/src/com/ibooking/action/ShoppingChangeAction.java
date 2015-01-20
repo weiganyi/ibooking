@@ -29,7 +29,7 @@ public class ShoppingChangeAction extends BaseAction {
 		}else if (opt.equals("amountDec")){
 			daoService.changeShoppingAmount(userName, menuName, "", false);
 		}else if (opt.equals("amountDel")){
-			daoService.deleteShoppingAmount(userName, menuName);
+			daoService.deleteShopping(userName, menuName);
 		}else if (opt.equals("remarkChange")){
 			daoService.changeShoppingRemark(userName, menuName, remark);
 		}else if (opt.equals("addrChange")){

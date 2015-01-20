@@ -12,7 +12,7 @@ body {
     text-align: center;
 }
 
-#ib_idx_content_div, #ib_shop_content_div {
+#ib_idx_content_div, #ib_shop_content_div, #ib_orderlist_content_div {
     width: 90%;
     margin: auto;
 }

@@ -2,12 +2,10 @@ package com.ibooking.action.base;
 
 import java.util.ArrayList;
 
-import com.ibooking.po.Shopping;
+import com.ibooking.po.*;
 import com.ibooking.service.*;
 import com.ibooking.util.WebConstant;
-import com.ibooking.vo.IndexPageBean;
-import com.ibooking.vo.MenuTypeBean;
-import com.ibooking.vo.ShoppingPageBean;
+import com.ibooking.vo.*;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -23,24 +21,33 @@ public class BaseAction extends ActionSupport {
 	
 	protected DaoService daoService;
 
+	//pass to the jsp
 	protected String failReason;
 
+	//pass to the jsp
 	protected String strTitle;
 
+	//the http request param
 	protected String page;
 
 	protected static final Integer defaultMinPageNum = 1;
+	//pass to the jsp
 	protected int currPage;
 	protected int startPage;
 	protected int endPage;
 	protected int maxPage;
 	protected String destPage;
 
+	//pass to the jsp
 	protected ArrayList<MenuTypeBean> lstMenuTypeBean;
 
+	//pass to the jsp
 	private ArrayList<Shopping> lstShoppingBean;
 	private String strAddress;
 	private int totalPrice;
+
+	//pass to the jsp
+	private ArrayList<OrderBean> lstOrderListBean;
 
 	public String fillTitle() {
 		strTitle = daoService.getTitle();
@@ -92,20 +99,42 @@ public class BaseAction extends ActionSupport {
 		strAddress = daoService.getUserAddrByName(userName);
 
 		clsShoppingPageBean = daoService.getShoppingPageBean(currPage, userName);
-		if (clsShoppingPageBean != null && clsShoppingPageBean.getLst().size() != 0) {
+		if (clsShoppingPageBean.getLst().size() != 0) {
 			lstShoppingBean = clsShoppingPageBean.getLst();
-			startPage = clsShoppingPageBean.getStartPage();
-			endPage = clsShoppingPageBean.getEndPage();
-			maxPage = clsShoppingPageBean.getMaxPage();
-			destPage = "shoppingPageEnter";
-			totalPrice = clsShoppingPageBean.getTotalPrice();
-
-			return RET_SUCC;
-		}else {
-			return RET_FAIL;
 		}
+		startPage = clsShoppingPageBean.getStartPage();
+		endPage = clsShoppingPageBean.getEndPage();
+		maxPage = clsShoppingPageBean.getMaxPage();
+		destPage = "shoppingPageEnter";
+		totalPrice = clsShoppingPageBean.getTotalPrice();
+		
+		return RET_SUCC;
 	}
 
+	public String fillOrderListPage() {
+		OrderListPageBean clsOrderListPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+		
+		ActionContext ctx = ActionContext.getContext();
+		String userName = (String)ctx.getSession().get(WebConstant.LOGIN_USER);
+
+		clsOrderListPageBean = daoService.getOrderListPageBean(currPage, userName);
+		if (clsOrderListPageBean.getLst().size() != 0) {
+			lstOrderListBean = clsOrderListPageBean.getLst();
+		}
+		startPage = clsOrderListPageBean.getStartPage();
+		endPage = clsOrderListPageBean.getEndPage();
+		maxPage = clsOrderListPageBean.getMaxPage();
+		destPage = "orderListPageEnter";
+		
+		return RET_SUCC;
+	}
+	
 	public void setDaoService(DaoService service) {
 		this.daoService = service;
 	}
@@ -204,5 +233,13 @@ public class BaseAction extends ActionSupport {
 
 	public void setTotalPrice(int totalPrice) {
 		this.totalPrice = totalPrice;
+	}
+
+	public ArrayList<OrderBean> getLstOrderListBean() {
+		return lstOrderListBean;
+	}
+
+	public void setLstOrderListBean(ArrayList<OrderBean> lstOrderListBean) {
+		this.lstOrderListBean = lstOrderListBean;
 	}
 }

@@ -62,11 +62,13 @@
         value="<s:property value="strAddress" />" />
 </div>
 </br>
-<div id="ib_shop_submit">
-    <a href="shoppingSubmit" class="btn btn-primary" role="button">
-        <s:text name="shopSubmitBtn" />
-    </a>
-</div>
+<s:if test="totalPrice > 0">
+    <div id="ib_shop_submit">
+        <a href="shoppingSubmit" class="btn btn-primary" role="button">
+            <s:text name="shopSubmitBtn" />
+        </a>
+    </div>
+</s:if>
 
 <%-- the pagination --%>
 <%@ include file="/WEB-INF/jsp/pagination.jsp" %>

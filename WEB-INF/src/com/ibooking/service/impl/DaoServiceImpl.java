@@ -277,11 +277,11 @@ public class DaoServiceImpl implements DaoService {
 	}
 	
 	@Override
-	public void deleteShoppingAmount(String userName, 
+	public void deleteShopping(String userName, 
 								String menuName) {
 		if (userName == null || menuName == null || 
 			userName.length() == 0 || menuName.length() == 0) {
-			System.out.println("DaoServiceImpl.deleteShoppingAmount() input param is null");
+			System.out.println("DaoServiceImpl.deleteShopping() input param is null");
 			return;
 		}
 		
@@ -460,6 +460,111 @@ public class DaoServiceImpl implements DaoService {
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public OrderListPageBean getOrderListPageBean(int iCurrPage, String userName) {
+		List<Order> lstOrder = null;
+		List<Option> lstOption = null;
+
+		ArrayList<OrderBean> lstOrderBean = new ArrayList<OrderBean>();
+		OrderListPageBean clsOrderListPageBean = new OrderListPageBean();
+
+		String optionName = "tbl_page_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+		
+		int iOrderNum = 0;
+
+		//get the order from hibernate
+		lstOrder = orderDaoHbm.findByUserName(userName);
+		
+		//get the tbl_page_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		//iterator the Order
+		for (Order order : lstOrder) {
+			iLineNum++;
+			if (iLineNum > iMaxLineOnePage) {
+				iLineNum = 1;
+				iPageNum++;
+			}
+			
+			iOrderNum++;
+			
+			if (iPageNum == iCurrPage) {
+				OrderBean orderBean = new OrderBean();
+				orderBean.setId(order.getId());
+				orderBean.setTime(order.getTime());
+				orderBean.setAccept(order.getAccept());
+				orderBean.setSeq(iOrderNum);
+				
+				lstOrderBean.add(orderBean);
+			}
+		}
+		clsOrderListPageBean.setLst(lstOrderBean);
+
+		// calc the startpage and endpage
+		if (iPageNum <= defaultMaxPagination) {
+			iStartPage = 1;
+			iEndPage = iPageNum;
+		} else {
+			if (iCurrPage > defaultMaxPagination / 2) {
+				iStartPage = iCurrPage - defaultMaxPagination / 2;
+			} else {
+				iStartPage = 1;
+			}
+
+			if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
+				iEndPage = iCurrPage + defaultMaxPagination / 2;
+			} else {
+				iEndPage = iPageNum;
+			}
+		}
+		clsOrderListPageBean.setStartPage(iStartPage);
+		clsOrderListPageBean.setEndPage(iEndPage);
+		clsOrderListPageBean.setMaxPage(iPageNum);
+
+		return clsOrderListPageBean;
+	}
+	
+	@Override
+	public void deleteOrderTrans(String orderId) {
+		if (orderId == null || orderId.length() == 0) {
+			System.out.println("DaoServiceImpl.deleteOrderTrans() input param is null");
+			return;
+		}
+		
+		//get the order from hibernate
+		Order order = orderDaoHbm.get(Integer.valueOf(orderId));
+		if (order != null) {
+			//delete the order into hibernate
+			orderDaoHbm.delete(order);
+		}
+		
+		//get the orderdetail from hibernate
+		ArrayList<OrderDetail> lstOrderDetail  = 
+				(ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(Integer.valueOf(orderId));
+		if (!lstOrderDetail.isEmpty()) {
+			for (OrderDetail orderDetail : lstOrderDetail) {
+				//delete the orderdetail into hibernate
+				orderDetailDaoHbm.delete(orderDetail);
+			}
+		}
+
+		return;
+	}
+	
+	@Override
+	public ArrayList<OrderDetail> getOrderDetail(int orderId) {
+		//get the orderdetail from hibernate
+		return (ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(orderId);
 	}
 
 	public void init() {

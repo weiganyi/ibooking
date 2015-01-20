@@ -88,5 +88,23 @@
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
+        <action name="orderListPageEnter" class="com.ibooking.action.OrderListPageEnterAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/orderlist.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="orderListChange" class="com.ibooking.action.OrderListChangeAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/orderlist_content.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="orderDetailPageEnter" class="com.ibooking.action.OrderDetailPageEnterAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/orderdetail.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
     </package>
 </struts>
