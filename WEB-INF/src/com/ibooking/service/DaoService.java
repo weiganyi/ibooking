@@ -43,4 +43,22 @@ public interface DaoService {
 	
 	//orderdetail.jsp
 	ArrayList<OrderDetail> getOrderDetail(int orderId);
+	
+	//perinfo.jsp
+	boolean updateUserByName(String userOldName, 
+			String userNewName, 
+			String userNewPasswd, 
+			String userNewAuth, 
+			String userNewTel, 
+			String userNewAddr);
+	
+	//manuser.jsp
+	ManUserPageBean getManUserPageBean(int iCurrPage);
+	boolean updateUserById(int userOldId, 
+			String userNewName, 
+			String userNewPasswd, 
+			String userNewAuth, 
+			String userNewTel, 
+			String userNewAddr);
+	void deleteUser(int Id);
 }

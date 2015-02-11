@@ -16,22 +16,24 @@
         <%-- include the jstl --%>
         <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
         
-        <table class="table">
-            <tr>
-                <th><s:text name="orderdetailMenu" /></th>
-                <th><s:text name="orderdetailPrice" /></th>
-                <th><s:text name="orderdetailAmount" /></th>
-                <th><s:text name="orderdetailRemark" /></th>
-            </tr>
-            <s:iterator value="lstOrderDetail" id="bean" status="st">
-            <tr>
-                <td><s:property value="#bean.menuName" /></td>
-                <td><s:property value="#bean.menuPrice" /></td>
-                <td><s:property value="#bean.amount" /></td>
-                <td><s:property value="#bean.remark" /></td>
-            </tr>
-            </s:iterator>
-        </table>
+        <div id="ib_orderdetail_content_div">
+            <table class="table">
+                <tr>
+                    <th><s:text name="orderdetailMenu" /></th>
+                    <th><s:text name="orderdetailPrice" /></th>
+                    <th><s:text name="orderdetailAmount" /></th>
+                    <th><s:text name="orderdetailRemark" /></th>
+                </tr>
+                <s:iterator value="lstOrderDetail" id="bean" status="st">
+                <tr>
+                    <td><s:property value="#bean.menuName" /></td>
+                    <td><s:property value="#bean.menuPrice" /></td>
+                    <td><s:property value="#bean.amount" /></td>
+                    <td><s:property value="#bean.remark" /></td>
+                </tr>
+                </s:iterator>
+            </table>
+        </div>
 
     </body>
 </html>

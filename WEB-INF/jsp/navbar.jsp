@@ -2,9 +2,23 @@
     <div class="container">
         <a href="indexPageEnter" id="ib_navbar_link_index_a" class="navbar-brand"><s:property value="strTitle" /></a>
         <ul class="nav navbar-nav navbar-right">
+            <s:if test="#session.loginAuth=='admin'">
+                <li class="dropdown">
+                    <a href="#" id="ib_navbar_manager_menu_a" class="dropdown-toggle" data-toggle="dropdown">
+                        <s:text name="navManager" /> <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="manOrderPageEnter"><s:text name="navManOrder" /></a></li>
+                        <li><a href="manUserPageEnter"><s:text name="navManUser" /></a></li>
+                        <li><a href="manMenuPageEnter"><s:text name="navManMenu" /></a></li>
+                        <li><a href="manMenuTypePageEnter"><s:text name="navManMenuType" /></a></li>
+                        <li><a href="manOptionPageEnter"><s:text name="navManOption" /></a></li>
+                    </ul>
+                </li>
+            </s:if>
             <s:if test="#session.loginUser!=null">
                 <li class="dropdown">
-                    <a href="#" id="ib_navbar_menu_a" class="dropdown-toggle" data-toggle="dropdown">
+                    <a href="#" id="ib_navbar_option_menu_a" class="dropdown-toggle" data-toggle="dropdown">
                         <s:text name="navOptions" /> <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu" role="menu">

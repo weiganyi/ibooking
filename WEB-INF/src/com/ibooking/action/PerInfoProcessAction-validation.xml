@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE validators PUBLIC 
+    "-//Apache Struts//XWork Validator 1.0.3//EN" 
+    "http://struts.apache.org/dtds/xwork-validator-1.0.3.dtd">
+
+<validators>
+    <field name="userOldPasswd">
+        <field-validator type="requiredstring" short-circuit="true">
+            <param name="trim">true</param>
+            <message key="perinfo.userPasswd.required" />
+        </field-validator>
+        <field-validator type="regex">
+            <param name="expression"><![CDATA[(\w{4,25})]]></param>
+            <message key="perinfo.userPasswd.regex" />
+        </field-validator>
+    </field>
+
+    <field name="userNewName">
+        <field-validator type="requiredstring" short-circuit="true">
+            <param name="trim">true</param>
+            <message key="perinfo.userName.required" />
+        </field-validator>
+        <field-validator type="regex">
+            <param name="expression"><![CDATA[(\w{4,25})]]></param>
+            <message key="perinfo.userName.regex" />
+        </field-validator>
+    </field>
+
+    <field name="userNewPasswd">
+        <field-validator type="requiredstring" short-circuit="true">
+            <param name="trim">true</param>
+            <message key="perinfo.userPasswd.required" />
+        </field-validator>
+        <field-validator type="regex">
+            <param name="expression"><![CDATA[(\w{4,25})]]></param>
+            <message key="perinfo.userPasswd.regex" />
+        </field-validator>
+    </field>
+
+    <field name="userNewTel">
+        <field-validator type="requiredstring" short-circuit="true">
+            <param name="trim">true</param>
+            <message key="perinfo.userTel.required" />
+        </field-validator>
+        <field-validator type="regex">
+            <param name="expression"><![CDATA[(\w{7,12})]]></param>
+            <message key="perinfo.userTel.regex" />
+        </field-validator>
+    </field>
+
+    <field name="userNewAddr">
+        <field-validator type="requiredstring" short-circuit="true">
+            <param name="trim">true</param>
+            <message key="perinfo.userAddr.required" />
+        </field-validator>
+    </field>
+</validators>

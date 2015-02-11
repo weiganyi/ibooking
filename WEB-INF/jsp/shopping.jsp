@@ -22,35 +22,9 @@
                 }
             }
 
-            function onBtnIncClick(data) {
+            function onBtnChangeClick(data) {
                 var ajaxUrl = "shoppingChange";
   
-                jQuery.ajax({
-                    type: "POST",
-                    url: ajaxUrl,
-                    data: data,
-                    dataType: "html",
-                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                    success: fnChangeFinish
-                });
-            }
-
-            function onBtnDecClick(data) {
-                var ajaxUrl = "shoppingChange";
- 
-                jQuery.ajax({
-                    type: "POST",
-                    url: ajaxUrl,
-                    data: data,
-                    dataType: "html",
-                    contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                    success: fnChangeFinish
-                });
-            }
-
-            function onBtnDelClick(data) {
-                var ajaxUrl = "shoppingChange";
- 
                 jQuery.ajax({
                     type: "POST",
                     url: ajaxUrl,

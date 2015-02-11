@@ -19,15 +19,15 @@
         <td><s:property value="#bean.amount" /></td>
         <td>
             <button class="btn btn-primary btn-xs" 
-                 onclick='onBtnIncClick("menuName=<s:property value="#bean.menuName" />&opt=amountInc&page=${currPage}");'>
+                 onclick='onBtnChangeClick("menuName=<s:property value="#bean.menuName" />&opt=amountInc&page=${currPage}");'>
                 <s:text name="shopIncBtn" />
             </button>
             <button class="btn btn-primary btn-xs" 
-                onclick='onBtnDecClick("menuName=<s:property value="#bean.menuName" />&opt=amountDec&page=${currPage}");'>
+                onclick='onBtnChangeClick("menuName=<s:property value="#bean.menuName" />&opt=amountDec&page=${currPage}");'>
                 <s:text name="shopDecBtn" />
             </button>
             <button class="btn btn-primary btn-xs" 
-                onclick='onBtnDelClick("menuName=<s:property value="#bean.menuName" />&opt=amountDel&page=${currPage}");'>
+                onclick='onBtnChangeClick("menuName=<s:property value="#bean.menuName" />&opt=amountDel&page=${currPage}");'>
                 <s:text name="shopDelBtn" />
             </button>
         </td>

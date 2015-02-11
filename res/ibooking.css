@@ -12,7 +12,11 @@ body {
     text-align: center;
 }
 
-#ib_idx_content_div, #ib_shop_content_div, #ib_orderlist_content_div {
+#ib_idx_content_div, 
+#ib_shop_content_div, 
+#ib_orderlist_content_div, 
+#ib_orderdetail_content_div,
+#ib_manuser_content_div {
     width: 90%;
     margin: auto;
 }
@@ -23,7 +27,7 @@ body {
     margin: auto;
 }
 
-#ib_navbar_menu_a {
+#ib_navbar_manager_menu_a, #ib_navbar_option_menu_a {
     color: #fff;
 }
 
@@ -102,4 +106,18 @@ body {
     margin: 0 auto;
     width: auto;
     text-align: center;
+}
+
+/*** perinfo.jsp ***/
+#ib_perinfo_form {
+    width: 30%;
+    margin: 15% auto 0 auto;
+}
+
+#ib_perinfo_label {
+    font-size: 150%;
+}
+
+.ib_perinfo_error_div {
+    color: red;
 }

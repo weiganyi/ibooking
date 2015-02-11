@@ -567,6 +567,135 @@ public class DaoServiceImpl implements DaoService {
 		return (ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(orderId);
 	}
 
+	@Override
+	public boolean updateUserByName(String userOldName, 
+							String userNewName, 
+							String userNewPasswd, 
+							String userNewAuth, 
+							String userNewTel, 
+							String userNewAddr) {
+		User user = getUserByName(userOldName);
+		if (user == null) {
+			return false;
+		}
+		
+		user.setName(userNewName);
+		user.setPasswd(userNewPasswd);
+		user.setAuth(userNewAuth);
+		user.setTel(userNewTel);
+		user.setAddr(userNewAddr);
+		//update the user into hibernate
+		userDaoHbm.update(user);
+		
+		return true;
+	}
+	
+	@Override
+	public ManUserPageBean getManUserPageBean(int iCurrPage) {
+		List<User> lstUser = null;
+		List<Option> lstOption = null;
+
+		ArrayList<User> lstUserBean = new ArrayList<User>();
+		ManUserPageBean clsManUserPageBean = new ManUserPageBean();
+
+		String optionName = "tbl_page_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+
+		//get all users from hibernate
+		lstUser = userDaoHbm.findAll();
+		
+		//get the tbl_page_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		//iterator the User
+		for (User user : lstUser) {
+			iLineNum++;
+			if (iLineNum > iMaxLineOnePage) {
+				iLineNum = 1;
+				iPageNum++;
+			}
+			
+			if (iPageNum == iCurrPage) {
+				User userBean = new User();
+				userBean.setId(user.getId());
+				userBean.setName(user.getName());
+				userBean.setPasswd(user.getPasswd());
+				userBean.setAuth(user.getAuth());
+				userBean.setTel(user.getTel());
+				userBean.setAddr(user.getAddr());
+				
+				lstUserBean.add(userBean);
+			}
+		}
+		clsManUserPageBean.setLst(lstUserBean);
+
+		// calc the startpage and endpage
+		if (iPageNum <= defaultMaxPagination) {
+			iStartPage = 1;
+			iEndPage = iPageNum;
+		} else {
+			if (iCurrPage > defaultMaxPagination / 2) {
+				iStartPage = iCurrPage - defaultMaxPagination / 2;
+			} else {
+				iStartPage = 1;
+			}
+
+			if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
+				iEndPage = iCurrPage + defaultMaxPagination / 2;
+			} else {
+				iEndPage = iPageNum;
+			}
+		}
+		clsManUserPageBean.setStartPage(iStartPage);
+		clsManUserPageBean.setEndPage(iEndPage);
+		clsManUserPageBean.setMaxPage(iPageNum);
+
+		return clsManUserPageBean;
+	}
+
+	@Override
+	public boolean updateUserById(int userOldId, 
+							String userNewName, 
+							String userNewPasswd, 
+							String userNewAuth, 
+							String userNewTel, 
+							String userNewAddr) {
+		//get the user from hibernate
+		User user = userDaoHbm.get(userOldId);
+		if (user == null) {
+			return false;
+		}
+		
+		user.setName(userNewName);
+		user.setPasswd(userNewPasswd);
+		user.setAuth(userNewAuth);
+		user.setTel(userNewTel);
+		user.setAddr(userNewAddr);
+		//update the user into hibernate
+		userDaoHbm.update(user);
+		
+		return true;
+	}
+	
+	@Override
+	public void deleteUser(int Id) {
+		//get the user from hibernate
+		User user = userDaoHbm.get(Id);
+		if (user != null) {
+			//delete the user from hibernate
+			userDaoHbm.delete(user);
+		}
+		
+		return;
+	}
+
 	public void init() {
 		//create the queue
 		q = new LinkedBlockingQueue<OptInfo>();

@@ -42,12 +42,15 @@ public class BaseAction extends ActionSupport {
 	protected ArrayList<MenuTypeBean> lstMenuTypeBean;
 
 	//pass to the jsp
-	private ArrayList<Shopping> lstShoppingBean;
-	private String strAddress;
-	private int totalPrice;
+	protected ArrayList<Shopping> lstShoppingBean;
+	protected String strAddress;
+	protected int totalPrice;
 
 	//pass to the jsp
-	private ArrayList<OrderBean> lstOrderListBean;
+	protected ArrayList<OrderBean> lstOrderListBean;
+
+	//pass to the jsp
+	protected ArrayList<User> lstUserBean;
 
 	public String fillTitle() {
 		strTitle = daoService.getTitle();
@@ -134,9 +137,34 @@ public class BaseAction extends ActionSupport {
 		
 		return RET_SUCC;
 	}
+
+	public String fillManUserPage() {
+		ManUserPageBean clsManUserPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManUserPageBean = daoService.getManUserPageBean(currPage);
+		if (clsManUserPageBean.getLst().size() != 0) {
+			lstUserBean = clsManUserPageBean.getLst();
+		}
+		startPage = clsManUserPageBean.getStartPage();
+		endPage = clsManUserPageBean.getEndPage();
+		maxPage = clsManUserPageBean.getMaxPage();
+		destPage = "manUserPageEnter";
+		
+		return RET_SUCC;
+	}
 	
-	public void setDaoService(DaoService service) {
-		this.daoService = service;
+	public DaoService getDaoService() {
+		return daoService;
+	}
+
+	public void setDaoService(DaoService daoService) {
+		this.daoService = daoService;
 	}
 	
 	public String getFailReason() {
@@ -241,5 +269,13 @@ public class BaseAction extends ActionSupport {
 
 	public void setLstOrderListBean(ArrayList<OrderBean> lstOrderListBean) {
 		this.lstOrderListBean = lstOrderListBean;
+	}
+
+	public ArrayList<User> getLstUserBean() {
+		return lstUserBean;
+	}
+
+	public void setLstUserBean(ArrayList<User> lstUserBean) {
+		this.lstUserBean = lstUserBean;
 	}
 }

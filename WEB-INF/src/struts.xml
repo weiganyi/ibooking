@@ -106,5 +106,28 @@
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
+        <action name="perInfoPageEnter">
+            <result type="dispatcher">/WEB-INF/jsp/perinfo.jsp</result>
+        </action>
+
+        <action name="perInfoProcess" class="com.ibooking.action.PerInfoProcessAction">
+            <interceptor-ref name="customerStack"/>
+            <result name="success">/WEB-INF/jsp/index.jsp</result>
+            <result name="input">/WEB-INF/jsp/perinfo.jsp</result>
+            <result name="failure">/WEB-INF/jsp/perinfo.jsp</result>
+        </action>
+
+        <action name="manUserPageEnter" class="com.ibooking.action.ManUserPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manuser.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manUserChange" class="com.ibooking.action.ManUserChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manuser.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
     </package>
 </struts>
