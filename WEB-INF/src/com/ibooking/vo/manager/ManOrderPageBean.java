@@ -1,19 +1,17 @@
-package com.ibooking.vo;
+package com.ibooking.vo.manager;
 
 import java.util.ArrayList;
 
-import com.ibooking.po.*;
-
-public class ManUserPageBean {
-	private ArrayList<User> lst;
+public class ManOrderPageBean {
+	private ArrayList<ManOrderBean> lst;
 	private int startPage;
 	private int endPage;
 	private int maxPage;
 
-	public ArrayList<User> getLst() {
+	public ArrayList<ManOrderBean> getLst() {
 		return lst;
 	}
-	public void setLst(ArrayList<User> lst) {
+	public void setLst(ArrayList<ManOrderBean> lst) {
 		this.lst = lst;
 	}
 	public int getStartPage() {

@@ -16,7 +16,9 @@ body {
 #ib_shop_content_div, 
 #ib_orderlist_content_div, 
 #ib_orderdetail_content_div,
-#ib_manuser_content_div {
+#ib_man_user_content_div,
+#ib_man_order_content_div,
+#ib_man_orderdetail_content_div, {
     width: 90%;
     margin: auto;
 }

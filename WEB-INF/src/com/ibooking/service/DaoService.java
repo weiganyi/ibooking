@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.ibooking.po.OrderDetail;
 import com.ibooking.vo.*;
+import com.ibooking.vo.manager.*;
 
 public interface DaoService {
 	//login.jsp
@@ -42,7 +43,7 @@ public interface DaoService {
 	void deleteOrderTrans(String orderId);
 	
 	//orderdetail.jsp
-	ArrayList<OrderDetail> getOrderDetail(int orderId);
+	ArrayList<OrderDetail> getOrderDetailByOrderId(int orderId);
 	
 	//perinfo.jsp
 	boolean updateUserByName(String userOldName, 
@@ -52,7 +53,7 @@ public interface DaoService {
 			String userNewTel, 
 			String userNewAddr);
 	
-	//manuser.jsp
+	//man_user.jsp
 	ManUserPageBean getManUserPageBean(int iCurrPage);
 	boolean updateUserById(int userOldId, 
 			String userNewName, 
@@ -60,5 +61,24 @@ public interface DaoService {
 			String userNewAuth, 
 			String userNewTel, 
 			String userNewAddr);
-	void deleteUser(int Id);
+	void deleteUser(int id);
+	
+	//man_order.jsp
+	ManOrderPageBean getManOrderPageBean(int iCurrPage);
+	boolean updateOrderAccept(int id, boolean isAccept);
+	void deleteOrder(int id);
+	
+	//man_orderdetail.jsp
+	boolean insertOrderDetail(int orderId,
+							String menu, 					
+							int price, 
+							int amount, 
+							String remark);
+	boolean updateOrderDetailById(int id, 
+								int orderId,
+								String menu, 					
+								int price, 
+								int amount, 
+								String remark);
+	void deleteOrderDetail(int id);
 }

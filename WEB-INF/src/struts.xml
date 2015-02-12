@@ -117,15 +117,39 @@
             <result name="failure">/WEB-INF/jsp/perinfo.jsp</result>
         </action>
 
-        <action name="manUserPageEnter" class="com.ibooking.action.ManUserPageEnterAction">
+        <action name="manUserPageEnter" class="com.ibooking.action.manager.ManUserPageEnterAction">
             <interceptor-ref name="adminStack"/>
-            <result name="success">/WEB-INF/jsp/manuser.jsp</result>
+            <result name="success">/WEB-INF/jsp/manager/man_user.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
-        <action name="manUserChange" class="com.ibooking.action.ManUserChangeAction">
+        <action name="manUserChange" class="com.ibooking.action.manager.ManUserChangeAction">
             <interceptor-ref name="adminStack"/>
-            <result name="success">/WEB-INF/jsp/manuser.jsp</result>
+            <result name="success">/WEB-INF/jsp/manager/man_user.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOrderPageEnter" class="com.ibooking.action.manager.ManOrderPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_order.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOrderChange" class="com.ibooking.action.manager.ManOrderChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_order.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOrderDetailPageEnter" class="com.ibooking.action.OrderDetailPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_orderdetail.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOrderDetailChange" class="com.ibooking.action.manager.ManOrderDetailChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_orderdetail.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 

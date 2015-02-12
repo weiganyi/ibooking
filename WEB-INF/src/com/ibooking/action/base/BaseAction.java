@@ -6,6 +6,7 @@ import com.ibooking.po.*;
 import com.ibooking.service.*;
 import com.ibooking.util.WebConstant;
 import com.ibooking.vo.*;
+import com.ibooking.vo.manager.*;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -21,10 +22,10 @@ public class BaseAction extends ActionSupport {
 	
 	protected DaoService daoService;
 
-	//pass to the jsp
+	//pass to the *.jsp
 	protected String failReason;
 
-	//pass to the jsp
+	//pass to the *.jsp
 	protected String strTitle;
 
 	//the http request param
@@ -38,19 +39,26 @@ public class BaseAction extends ActionSupport {
 	protected int maxPage;
 	protected String destPage;
 
-	//pass to the jsp
+	//pass to the index.jsp
 	protected ArrayList<MenuTypeBean> lstMenuTypeBean;
 
-	//pass to the jsp
+	//pass to the shopping.jsp
 	protected ArrayList<Shopping> lstShoppingBean;
 	protected String strAddress;
 	protected int totalPrice;
 
-	//pass to the jsp
+	//pass to the orderlist.jsp
 	protected ArrayList<OrderBean> lstOrderListBean;
 
-	//pass to the jsp
+	//pass to the man_user.jsp
 	protected ArrayList<User> lstUserBean;
+
+	//pass to the man_order.jsp
+	protected ArrayList<ManOrderBean> lstOrderBean;
+	
+	//pass to the orderdetail.jsp and man_orderdetail.jsp
+	protected ArrayList<OrderDetail> lstOrderDetail;
+
 
 	public String fillTitle() {
 		strTitle = daoService.getTitle();
@@ -138,6 +146,12 @@ public class BaseAction extends ActionSupport {
 		return RET_SUCC;
 	}
 
+	public String fillOrderDetailPage(int orderId) {
+		lstOrderDetail = daoService.getOrderDetailByOrderId(orderId);
+
+		return RET_SUCC;
+	}
+
 	public String fillManUserPage() {
 		ManUserPageBean clsManUserPageBean;
 		
@@ -158,7 +172,28 @@ public class BaseAction extends ActionSupport {
 		
 		return RET_SUCC;
 	}
-	
+
+	public String fillManOrderPage() {
+		ManOrderPageBean clsManOrderPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManOrderPageBean = daoService.getManOrderPageBean(currPage);
+		if (clsManOrderPageBean.getLst().size() != 0) {
+			lstOrderBean = clsManOrderPageBean.getLst();
+		}
+		startPage = clsManOrderPageBean.getStartPage();
+		endPage = clsManOrderPageBean.getEndPage();
+		maxPage = clsManOrderPageBean.getMaxPage();
+		destPage = "manOrderPageEnter";
+		
+		return RET_SUCC;
+	}
+
 	public DaoService getDaoService() {
 		return daoService;
 	}
@@ -277,5 +312,21 @@ public class BaseAction extends ActionSupport {
 
 	public void setLstUserBean(ArrayList<User> lstUserBean) {
 		this.lstUserBean = lstUserBean;
+	}
+
+	public ArrayList<ManOrderBean> getLstOrderBean() {
+		return lstOrderBean;
+	}
+
+	public void setLstOrderBean(ArrayList<ManOrderBean> lstOrderBean) {
+		this.lstOrderBean = lstOrderBean;
+	}
+
+	public ArrayList<OrderDetail> getLstOrderDetail() {
+		return lstOrderDetail;
+	}
+
+	public void setLstOrderDetail(ArrayList<OrderDetail> lstOrderDetail) {
+		this.lstOrderDetail = lstOrderDetail;
 	}
 }

@@ -10,6 +10,7 @@ import com.ibooking.po.*;
 import com.ibooking.service.*;
 import com.ibooking.util.WebConstant;
 import com.ibooking.vo.*;
+import com.ibooking.vo.manager.*;
 
 public class DaoServiceImpl implements DaoService {
 	private MenuDao menuDaoHbm;
@@ -562,7 +563,7 @@ public class DaoServiceImpl implements DaoService {
 	}
 	
 	@Override
-	public ArrayList<OrderDetail> getOrderDetail(int orderId) {
+	public ArrayList<OrderDetail> getOrderDetailByOrderId(int orderId) {
 		//get the orderdetail from hibernate
 		return (ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(orderId);
 	}
@@ -614,7 +615,7 @@ public class DaoServiceImpl implements DaoService {
 		lstOption = optionDaoRds.findByName(optionName);
 		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
 
-		//iterator the User
+		//iterator the Users
 		for (User user : lstUser) {
 			iLineNum++;
 			if (iLineNum > iMaxLineOnePage) {
@@ -685,15 +686,203 @@ public class DaoServiceImpl implements DaoService {
 	}
 	
 	@Override
-	public void deleteUser(int Id) {
+	public void deleteUser(int id) {
 		//get the user from hibernate
-		User user = userDaoHbm.get(Id);
+		User user = userDaoHbm.get(id);
 		if (user != null) {
 			//delete the user from hibernate
 			userDaoHbm.delete(user);
 		}
 		
 		return;
+	}
+	
+	@Override
+	public ManOrderPageBean getManOrderPageBean(int iCurrPage) {
+		List<Order> lstOrder = null;
+		List<Option> lstOption = null;
+		List<User> lstUser = null;
+
+		ArrayList<ManOrderBean> lstOrderBean = new ArrayList<ManOrderBean>();
+		ManOrderPageBean clsManOrderPageBean = new ManOrderPageBean();
+
+		String optionName = "tbl_page_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+
+		//get all orders from hibernate
+		lstOrder = orderDaoHbm.findAll();
+		
+		//get the tbl_page_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		//iterator the Orders
+		for (Order order : lstOrder) {
+			iLineNum++;
+			if (iLineNum > iMaxLineOnePage) {
+				iLineNum = 1;
+				iPageNum++;
+			}
+			
+			if (iPageNum == iCurrPage) {
+				//get user from hibernate
+				lstUser = userDaoHbm.findByName(order.getUserName());
+				if (lstUser.size() == 0) {
+					continue;
+				}
+				
+				ManOrderBean orderBean = new ManOrderBean();
+				orderBean.setId(order.getId());
+				orderBean.setUserName(order.getUserName());
+				orderBean.setTime(order.getTime());
+				orderBean.setAdminName(order.getAdminName());
+				orderBean.setAccept(order.getAccept());
+				orderBean.setTel(lstUser.get(0).getTel());
+				orderBean.setAddr(lstUser.get(0).getAddr());
+				
+				lstOrderBean.add(orderBean);
+			}
+		}
+		clsManOrderPageBean.setLst(lstOrderBean);
+
+		// calc the startpage and endpage
+		if (iPageNum <= defaultMaxPagination) {
+			iStartPage = 1;
+			iEndPage = iPageNum;
+		} else {
+			if (iCurrPage > defaultMaxPagination / 2) {
+				iStartPage = iCurrPage - defaultMaxPagination / 2;
+			} else {
+				iStartPage = 1;
+			}
+
+			if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
+				iEndPage = iCurrPage + defaultMaxPagination / 2;
+			} else {
+				iEndPage = iPageNum;
+			}
+		}
+		clsManOrderPageBean.setStartPage(iStartPage);
+		clsManOrderPageBean.setEndPage(iEndPage);
+		clsManOrderPageBean.setMaxPage(iPageNum);
+
+		return clsManOrderPageBean;
+	}
+
+	@Override
+	public boolean updateOrderAccept(int id, boolean isAccept) {
+		//get the order from hibernate
+		Order order = orderDaoHbm.get(id);
+		if (order == null) {
+			return false;
+		}
+		
+		if(isAccept) {
+			order.setAccept(1);
+		}else {
+			order.setAccept(0);
+		}
+		//update the order into hibernate
+		orderDaoHbm.update(order);
+		
+		return true;
+	}
+	
+	@Override
+	public void deleteOrder(int id) {
+		//get the order from hibernate
+		Order order = orderDaoHbm.get(id);
+		if (order != null) {
+			//delete the order from hibernate
+			orderDaoHbm.delete(order);
+		}
+
+		//get the orderdetail from hibernate
+		ArrayList<OrderDetail> lstOrderDetail = (ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(id);
+		for (OrderDetail orderDetail : lstOrderDetail) {
+			//delete the orderdetail from hibernate
+			orderDetailDaoHbm.delete(orderDetail);
+		}
+
+		return;
+	}
+
+	@Override
+	public boolean insertOrderDetail(int orderId,
+									String menu, 					
+									int price, 
+									int amount, 
+									String remark) {
+		//get the orderdetail from hibernate
+		OrderDetail orderDetail = getOrderDetail(orderId, menu);
+		if (orderDetail != null) {
+			return false;
+		}
+		
+		orderDetail = new OrderDetail();
+		orderDetail.setOrderId(orderId);
+		orderDetail.setMenuName(menu);
+		orderDetail.setMenuPrice(price);
+		orderDetail.setAmount(amount);
+		orderDetail.setRemark(remark);
+		//save the orderdetail into hibernate
+		orderDetailDaoHbm.save(orderDetail);
+		
+		return true;
+	}
+
+	@Override
+	public boolean updateOrderDetailById(int id, 
+										int orderId,
+										String menu, 					
+										int price, 
+										int amount, 
+										String remark) {
+		//get the orderdetail from hibernate
+		OrderDetail orderDetail = orderDetailDaoHbm.get(id);
+		if (orderDetail == null) {
+			return false;
+		}
+		
+		orderDetail.setOrderId(orderId);
+		orderDetail.setMenuName(menu);
+		orderDetail.setMenuPrice(price);
+		orderDetail.setAmount(amount);
+		orderDetail.setRemark(remark);
+		//update the orderdetail into hibernate
+		orderDetailDaoHbm.update(orderDetail);
+		
+		return true;
+	}
+	
+	@Override
+	public void deleteOrderDetail(int id) {
+		//get the orderdetail from hibernate
+		OrderDetail orderDetail = orderDetailDaoHbm.get(id);
+		if (orderDetail != null) {
+			//delete the orderdetail from hibernate
+			orderDetailDaoHbm.delete(orderDetail);
+		}
+		
+		return;
+	}
+	
+	private OrderDetail getOrderDetail(int orderId, String menu) {
+		List<OrderDetail> lstOrderDetail = null;
+		
+		//get the orderdetail from hibernate
+		lstOrderDetail = orderDetailDaoHbm.find(orderId, menu);
+		if (lstOrderDetail == null || lstOrderDetail.size() == 0) {
+			return null;
+		}
+		
+		return lstOrderDetail.get(0);
 	}
 
 	public void init() {

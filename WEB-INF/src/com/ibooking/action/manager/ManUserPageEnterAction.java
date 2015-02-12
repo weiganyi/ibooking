@@ -1,4 +1,4 @@
-package com.ibooking.action;
+package com.ibooking.action.manager;
 
 import com.ibooking.action.base.*;
 

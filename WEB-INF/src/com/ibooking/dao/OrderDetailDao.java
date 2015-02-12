@@ -16,4 +16,6 @@ public interface OrderDetailDao {
 	List<OrderDetail> findAll();
 	
 	List<OrderDetail> findByOrderId(int orderId);
+	
+	List<OrderDetail> find(int orderId, String menu);
 }

@@ -39,4 +39,10 @@ public class OrderDetailDaoHibernate extends HibernateDaoSupport implements Orde
 	public List<OrderDetail> findByOrderId(int orderId) {
 		return getHibernateTemplate().find("from OrderDetail as u where u.orderId = ?", orderId);
 	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<OrderDetail> find(int orderId, String menu) {
+		return getHibernateTemplate().find("from OrderDetail as u where u.orderId = ? and u.menuName = ?", orderId, menu);
+	}
 }
