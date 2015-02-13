@@ -12,7 +12,7 @@ public class OrderListChangeAction extends BaseAction {
 	private static final long serialVersionUID = 1L;
 	
 	private String opt;
-	private String orderId;
+	private int orderId;
 
 	@Override
 	public String execute() throws UnsupportedEncodingException {
@@ -32,11 +32,11 @@ public class OrderListChangeAction extends BaseAction {
 		this.opt = opt;
 	}
 
-	public String getOrderId() {
+	public int getOrderId() {
 		return orderId;
 	}
 
-	public void setOrderId(String orderId) {
+	public void setOrderId(int orderId) {
 		this.orderId = orderId;
 	}
 

@@ -1,9 +1,12 @@
 package com.ibooking.service.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.struts2.ServletActionContext;
 
 import com.ibooking.dao.*;
 import com.ibooking.po.*;
@@ -25,11 +28,13 @@ public class DaoServiceImpl implements DaoService {
 	private MenuTypeDao menuTypeDaoRds;
 	private OptionDao optionDaoRds;
 	
-	enum OPT {INVALID, SAVE_USER, UPDATE, DELETE};
+	enum OPT {INVALID, UPDATE_MENU_LST, SAVE_USER, UPDATE, DELETE};
 	private LinkedBlockingQueue<OptInfo> q;
 	private Thread thd;
 
-	private static final int defaultMaxPagination = 7; 
+	private static final int defaultMaxPagination = 7;
+	
+	private static final String defaultPicSavePath = "res/pic/"; 
 	
 	@Override
 	public boolean validatePasswd(String userName, String userPasswd) {
@@ -536,14 +541,9 @@ public class DaoServiceImpl implements DaoService {
 	}
 	
 	@Override
-	public void deleteOrderTrans(String orderId) {
-		if (orderId == null || orderId.length() == 0) {
-			System.out.println("DaoServiceImpl.deleteOrderTrans() input param is null");
-			return;
-		}
-		
+	public void deleteOrderTrans(int orderId) {
 		//get the order from hibernate
-		Order order = orderDaoHbm.get(Integer.valueOf(orderId));
+		Order order = orderDaoHbm.get(orderId);
 		if (order != null) {
 			//delete the order into hibernate
 			orderDaoHbm.delete(order);
@@ -551,7 +551,7 @@ public class DaoServiceImpl implements DaoService {
 		
 		//get the orderdetail from hibernate
 		ArrayList<OrderDetail> lstOrderDetail  = 
-				(ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(Integer.valueOf(orderId));
+				(ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(orderId);
 		if (!lstOrderDetail.isEmpty()) {
 			for (OrderDetail orderDetail : lstOrderDetail) {
 				//delete the orderdetail into hibernate
@@ -793,25 +793,6 @@ public class DaoServiceImpl implements DaoService {
 		
 		return true;
 	}
-	
-	@Override
-	public void deleteOrder(int id) {
-		//get the order from hibernate
-		Order order = orderDaoHbm.get(id);
-		if (order != null) {
-			//delete the order from hibernate
-			orderDaoHbm.delete(order);
-		}
-
-		//get the orderdetail from hibernate
-		ArrayList<OrderDetail> lstOrderDetail = (ArrayList<OrderDetail>)orderDetailDaoHbm.findByOrderId(id);
-		for (OrderDetail orderDetail : lstOrderDetail) {
-			//delete the orderdetail from hibernate
-			orderDetailDaoHbm.delete(orderDetail);
-		}
-
-		return;
-	}
 
 	@Override
 	public boolean insertOrderDetail(int orderId,
@@ -819,13 +800,15 @@ public class DaoServiceImpl implements DaoService {
 									int price, 
 									int amount, 
 									String remark) {
+		List<OrderDetail> lstOrderDetail = null;
+		
 		//get the orderdetail from hibernate
-		OrderDetail orderDetail = getOrderDetail(orderId, menu);
-		if (orderDetail != null) {
+		lstOrderDetail = orderDetailDaoHbm.find(orderId, menu);
+		if (lstOrderDetail == null || lstOrderDetail.size() != 0) {
 			return false;
 		}
 		
-		orderDetail = new OrderDetail();
+		OrderDetail orderDetail = new OrderDetail();
 		orderDetail.setOrderId(orderId);
 		orderDetail.setMenuName(menu);
 		orderDetail.setMenuPrice(price);
@@ -873,16 +856,136 @@ public class DaoServiceImpl implements DaoService {
 		return;
 	}
 	
-	private OrderDetail getOrderDetail(int orderId, String menu) {
-		List<OrderDetail> lstOrderDetail = null;
+	@Override
+	public ManPicPageBean getManPicPageBean(int iCurrPage) {
+		List<Option> lstOption = null;
+
+		ManPicBean manPicBean;
+		ArrayList<ManPicBean> lstPicBean = new ArrayList<ManPicBean>();
+		ManPicPageBean clsManPicPageBean = new ManPicPageBean();
+
+		String optionName = "idx_menu_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+
+		int iMaxPicOneLine = 4;
+		int iPicNum = 0;
+
+		// get the idx_menu_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		// tree the pic directory
+		@SuppressWarnings("deprecation")
+		String rootDir = ServletActionContext.getRequest().getRealPath("/");
+		File f = new File(rootDir + defaultPicSavePath);
+		if (f.isDirectory()) {
+			File[] t = f.listFiles();
+
+			// iterator the File
+			for (int i = 0; i < t.length; i++) {
+				iPicNum++;
+
+				if (iPicNum > iMaxPicOneLine) {
+					iPicNum = 0;
+					iLineNum++;
+				}
+				if (iLineNum > iMaxLineOnePage) {
+					iLineNum = 1;
+					iPageNum++;
+				}
+
+				if (iPageNum == iCurrPage) {
+					String name = t[i].getName();
+					String[] pp = name.split("\\.");
+					if (pp.length != 2) {
+						continue;
+					}
+
+					manPicBean = new ManPicBean();
+					manPicBean.setName(pp[0]);
+					manPicBean.setAddr(defaultPicSavePath + name);
+
+					lstPicBean.add(manPicBean);
+				}
+			}
+			clsManPicPageBean.setLst(lstPicBean);
+
+			// calc the startpage and endpage
+			if (iPageNum <= defaultMaxPagination) {
+				iStartPage = 1;
+				iEndPage = iPageNum;
+			} else {
+				if (iCurrPage > defaultMaxPagination / 2) {
+					iStartPage = iCurrPage - defaultMaxPagination / 2;
+				} else {
+					iStartPage = 1;
+				}
+
+				if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
+					iEndPage = iCurrPage + defaultMaxPagination / 2;
+				} else {
+					iEndPage = iPageNum;
+				}
+			}
+			clsManPicPageBean.setStartPage(iStartPage);
+			clsManPicPageBean.setEndPage(iEndPage);
+			clsManPicPageBean.setMaxPage(iPageNum);
+		}
+
+		return clsManPicPageBean;
+	}
+	
+	@Override
+	public void deletePic(String name, String addr) {
+		ArrayList<Menu> lstNewMenu = null;
 		
-		//get the orderdetail from hibernate
-		lstOrderDetail = orderDetailDaoHbm.find(orderId, menu);
-		if (lstOrderDetail == null || lstOrderDetail.size() == 0) {
-			return null;
+		@SuppressWarnings("deprecation")
+		String rootDir = ServletActionContext.getRequest().getRealPath("/");
+		File f = new File(rootDir + addr);
+		if(f.isFile()) {
+			f.delete();
 		}
 		
-		return lstOrderDetail.get(0);
+		//find menu list from redis
+		ArrayList<Menu> lstOldMenu = (ArrayList<Menu>)menuDaoRds.findByPicAddr(addr);
+		if (lstOldMenu.size() != 0) {
+			lstNewMenu = (ArrayList<Menu>)menuDaoRds.findByPicAddr(addr);
+			for (Menu menu : lstNewMenu) {
+				//clear the pic addr for all menu
+				menu.setPicture("");
+
+				//update the new menu into redis
+				menuDaoRds.update(menu);
+			}
+		}
+		
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.UPDATE_MENU_LST);
+		oi.setLstOldMenu(lstOldMenu);
+		oi.setLstNewMenu(lstNewMenu);
+		try {
+			//put this msg into the queue
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.deletePic() q.put() catch exception: " + e.getMessage());
+			try {
+				//if fail, need restore the redis
+				for (Menu menu : lstOldMenu) {
+					menuDaoRds.update(menu);
+				}
+			}catch (Exception e2) {
+				System.out.println("DaoServiceImpl.deletePic() menuDaoRds.update() catch exception: " + e.getMessage());
+				//redis and mysql will be inconsistency in here
+			}
+		}
+
+		return;
 	}
 
 	public void init() {
@@ -907,7 +1010,119 @@ public class DaoServiceImpl implements DaoService {
 			System.out.println("DaoServiceImpl.destory() q.put() catch exception: " + e.getMessage());
 		}
 	}
-	
+
+	private class OptInfo {
+		private OPT opt;
+		private ArrayList<Menu> lstOldMenu;
+		private ArrayList<Menu> lstNewMenu;
+
+		public OPT getOpt() {
+			return opt;
+		}
+		public void setOpt(OPT opt) {
+			this.opt = opt;
+		}
+		public ArrayList<Menu> getLstOldMenu() {
+			return lstOldMenu;
+		}
+		public void setLstOldMenu(ArrayList<Menu> lstOldMenu) {
+			this.lstOldMenu = lstOldMenu;
+		}
+		public ArrayList<Menu> getLstNewMenu() {
+			return lstNewMenu;
+		}
+		public void setLstNewMenu(ArrayList<Menu> lstNewMenu) {
+			this.lstNewMenu = lstNewMenu;
+		}
+	}
+
+	private class Consumer implements Runnable {
+		@Override
+		public void run() {
+			OptInfo oi;
+			
+			while(!Thread.interrupted()) {
+				try {
+					oi = q.take();
+				}catch (InterruptedException e) {
+					System.out.println("DaoServiceImpl.Consumer.run() q.take() catch exception: " + e.getMessage());
+					continue;
+				}
+				
+				if (oi.getOpt() == OPT.INVALID) {
+					continue;
+				}else if (oi.getOpt() == OPT.UPDATE_MENU_LST) {
+					ArrayList<Menu> lstOldMenu = oi.getLstOldMenu();
+					ArrayList<Menu> lstNewMenu = oi.getLstNewMenu();
+					
+					try {
+						//update the menu into hibernate
+						for (Menu menu : lstNewMenu) {
+							menuDaoHbm.update(menu);
+						}
+					}catch (Exception e) {
+						System.out.println("DaoServiceImpl.Consumer.run() menuDaoHbm.update() catch exception: " + e.getMessage());
+						try {
+							//if fail, need restore the redis
+							for (Menu menu : lstOldMenu) {
+								menuDaoRds.update(menu);
+							}
+						}catch (Exception e2) {
+							System.out.println("DaoServiceImpl.Consumer.run() menuDaoRds.update() catch exception: " + e.getMessage());
+							//redis and mysql will be inconsistency in here
+						}
+					}
+				}/*else if (oi.getOpt() == OPT.SAVE_USER) {
+					newUser = oi.getNewUser();
+
+					try {
+						//save the user into hibernate
+						userDaoHbm.save(newUser);
+					}catch (Exception e) {
+						System.out.println("DaoServiceImpl.Consumer.run() userDaoHbm.save() catch exception: " + e.getMessage());
+						try {
+							//if fail, need restore the redis
+							userDaoRds.delete(newUser);
+						}catch (Exception e2) {
+							System.out.println("DaoServiceImpl.Consumer.run() userDaoRds.delete() catch exception: " + e.getMessage());
+							//redis and mysql will be inconsistency in here
+						}
+					}
+				}
+				else if (oi.getOpt() == OPT.UPDATE) {
+					newUser = oi.getNewUser();
+					oldUser = oi.getOldUser();
+					
+					try {
+						//update into hibernate
+						userDaoHbm.update(newUser);
+					}catch (Exception e) {
+						try {
+							//if fail, need restore the redis
+							userDaoRds.update(oldUser);
+						}catch (Exception e2) {
+							continue;
+						}
+					}
+				}else if (oi.getOpt() == OPT.DELETE) {
+					oldUser = oi.getOldUser();
+
+					try {
+						//delete from hibernate
+						userDaoHbm.delete(oldUser);
+					}catch (Exception e) {
+						try {
+							//if fail, need restore the redis
+							userDaoRds.save(oldUser);
+						}catch (Exception e2) {
+							continue;
+						}
+					}
+				}*/
+			}
+		}
+	}
+
 	public MenuDao getMenuDaoHbm() {
 		return menuDaoHbm;
 	}
@@ -986,82 +1201,5 @@ public class DaoServiceImpl implements DaoService {
 
 	public void setOptionDaoRds(OptionDao optionDaoRds) {
 		this.optionDaoRds = optionDaoRds;
-	}
-
-	private class OptInfo {
-		private OPT opt;
-
-		public OPT getOpt() {
-			return opt;
-		}
-		public void setOpt(OPT opt) {
-			this.opt = opt;
-		}
-	}
-
-	private class Consumer implements Runnable {
-		@Override
-		public void run() {
-			OptInfo oi;
-			
-			while(!Thread.interrupted()) {
-				try {
-					oi = q.take();
-				}catch (InterruptedException e) {
-					System.out.println("DaoServiceImpl.Consumer.run() q.take() catch exception: " + e.getMessage());
-					continue;
-				}
-				
-				if (oi.getOpt() == OPT.INVALID) {
-					continue;
-				}/*else if (oi.getOpt() == OPT.SAVE_USER) {
-					newUser = oi.getNewUser();
-
-					try {
-						//save the user into hibernate
-						userDaoHbm.save(newUser);
-					}catch (Exception e) {
-						System.out.println("DaoServiceImpl.Consumer.run() userDaoHbm.save() catch exception: " + e.getMessage());
-						try {
-							//if fail, need restore the redis
-							userDaoRds.delete(newUser);
-						}catch (Exception e2) {
-							System.out.println("DaoServiceImpl.Consumer.run() userDaoRds.delete() catch exception: " + e.getMessage());
-							//redis and mysql will be inconsistency in here
-						}
-					}
-				}
-				else if (oi.getOpt() == OPT.UPDATE) {
-					newUser = oi.getNewUser();
-					oldUser = oi.getOldUser();
-					
-					try {
-						//update into hibernate
-						userDaoHbm.update(newUser);
-					}catch (Exception e) {
-						try {
-							//if fail, need restore the redis
-							userDaoRds.update(oldUser);
-						}catch (Exception e2) {
-							continue;
-						}
-					}
-				}else if (oi.getOpt() == OPT.DELETE) {
-					oldUser = oi.getOldUser();
-
-					try {
-						//delete from hibernate
-						userDaoHbm.delete(oldUser);
-					}catch (Exception e) {
-						try {
-							//if fail, need restore the redis
-							userDaoRds.save(oldUser);
-						}catch (Exception e2) {
-							continue;
-						}
-					}
-				}*/
-			}
-		}
 	}
 }

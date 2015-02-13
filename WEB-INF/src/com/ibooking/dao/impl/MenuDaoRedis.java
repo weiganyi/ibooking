@@ -1,7 +1,7 @@
 package com.ibooking.dao.impl;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +39,7 @@ public class MenuDaoRedis implements MenuDao {
 			jedis.set("ib_menu:" + menu.getId().toString() + ":menu_name", menu.getName());
 			jedis.set("ib_menu:" + menu.getId().toString() + ":menu_price", String.valueOf(menu.getPrice()));
 			jedis.set("ib_menu:" + menu.getId().toString() + ":menu_pic_addr", menu.getPicture());
-			jedis.set("ib_menu:" + menu.getId().toString() + ":menu_type_name", menu.getType().getName());
+			jedis.set("ib_menu:" + menu.getId().toString() + ":menu_type_id", String.valueOf(menu.getType().getId()));
 		}
 	}
 
@@ -51,31 +51,52 @@ public class MenuDaoRedis implements MenuDao {
 		this.menuDaoHbm = menuDaoHbm;
 	}
 	
-	public Integer getNextId() {
+	public synchronized Integer getNextId() {
 		return jedis.incr("ib_menu:auto_increment").intValue();
 	}
 
 	@Override
-	public Menu get(Integer id) {
+	public synchronized Menu get(Integer id) {
 		return null;
 	}
 
 	@Override
-	public Integer save(Menu menu) {
+	public synchronized Integer save(Menu menu) {
 		return 0;
 	}
 
 	@Override
-	public void update(Menu menu) {
+	public synchronized void update(Menu menu) {
+		String menuId = menu.getId().toString();
+		
+		//delete the old menu
+		Set<String> setId = jedis.keys("ib_menu:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(menuId)) {
+				jedis.del(key);
+				jedis.del("ib_menu:" + id + ":menu_name");
+				jedis.del("ib_menu:" + id + ":menu_price");
+				jedis.del("ib_menu:" + id + ":menu_pic_addr");
+				jedis.del("ib_menu:" + id + ":menu_type_id");
+			}
+		}
+		
+		//save the new menu
+		jedis.set("ib_menu:" + menu.getName() + ":id", menu.getId().toString());
+		jedis.set("ib_menu:" + menu.getId().toString() + ":menu_name", menu.getName());
+		jedis.set("ib_menu:" + menu.getId().toString() + ":menu_price", String.valueOf(menu.getPrice()));
+		jedis.set("ib_menu:" + menu.getId().toString() + ":menu_pic_addr", menu.getPicture());
+		jedis.set("ib_menu:" + menu.getId().toString() + ":menu_type_id", String.valueOf(menu.getType().getId()));
 	}
 
 	@Override
-	public void delete(Menu menu) {
+	public synchronized void delete(Menu menu) {
 	}
 
 	@Override
-	public List<Menu> findAll() {
-		LinkedList<Menu> lstMenu = new LinkedList<Menu>();
+	public synchronized List<Menu> findAll() {
+		ArrayList<Menu> lstMenu = new ArrayList<Menu>();
 		Set<String> setId = jedis.keys("ib_menu:*:id");
 		
 		//iterator the keys
@@ -84,9 +105,8 @@ public class MenuDaoRedis implements MenuDao {
 			String name = jedis.get("ib_menu:" + id + ":menu_name");
 			String price = jedis.get("ib_menu:" + id + ":menu_price");
 			String addr = jedis.get("ib_menu:" + id + ":menu_pic_addr");
-			String type = jedis.get("ib_menu:" + id + ":menu_type_name");
+			String typeId = jedis.get("ib_menu:" + id + ":menu_type_id");
 			
-			String typeId = jedis.get("ib_menu_type:" + type + ":id");
 			String typeName = jedis.get("ib_menu_type:" + typeId + ":menu_type_name");
 			
 			MenuType menuType = new MenuType();
@@ -101,6 +121,41 @@ public class MenuDaoRedis implements MenuDao {
 			menu.setType(menuType);
 			
 			lstMenu.add(menu);
+		}
+
+		return lstMenu;
+	}
+
+	@Override
+	public synchronized List<Menu> findByPicAddr(String picAddr) {
+		ArrayList<Menu> lstMenu = new ArrayList<Menu>();
+		Set<String> setId = jedis.keys("ib_menu:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id = jedis.get(key);
+			String addr = jedis.get("ib_menu:" + id + ":menu_pic_addr");
+
+			if (addr.equals(picAddr)) {
+				String name = jedis.get("ib_menu:" + id + ":menu_name");
+				String price = jedis.get("ib_menu:" + id + ":menu_price");
+				String typeId = jedis.get("ib_menu:" + id + ":menu_type_id");
+				
+				String typeName = jedis.get("ib_menu_type:" + typeId + ":menu_type_name");
+				
+				MenuType menuType = new MenuType();
+				menuType.setId(Integer.valueOf(typeId));
+				menuType.setName(typeName);
+
+				Menu menu = new Menu();
+				menu.setId(Integer.valueOf(id));
+				menu.setName(name);
+				menu.setPrice(Integer.valueOf(price));
+				menu.setPicture(addr);
+				menu.setType(menuType);
+				
+				lstMenu.add(menu);
+			}
 		}
 
 		return lstMenu;

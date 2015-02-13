@@ -40,7 +40,7 @@ public interface DaoService {
 
 	//orderlist.jsp
 	OrderListPageBean getOrderListPageBean(int iCurrPage, String userName);
-	void deleteOrderTrans(String orderId);
+	void deleteOrderTrans(int orderId);
 	
 	//orderdetail.jsp
 	ArrayList<OrderDetail> getOrderDetailByOrderId(int orderId);
@@ -66,7 +66,6 @@ public interface DaoService {
 	//man_order.jsp
 	ManOrderPageBean getManOrderPageBean(int iCurrPage);
 	boolean updateOrderAccept(int id, boolean isAccept);
-	void deleteOrder(int id);
 	
 	//man_orderdetail.jsp
 	boolean insertOrderDetail(int orderId,
@@ -81,4 +80,8 @@ public interface DaoService {
 								int amount, 
 								String remark);
 	void deleteOrderDetail(int id);
+	
+	//man_pic.jsp
+	ManPicPageBean getManPicPageBean(int iCurrPage);
+	void deletePic(String name, String addr);
 }

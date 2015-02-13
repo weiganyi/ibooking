@@ -51,6 +51,11 @@ public class MenuDaoHibernate extends HibernateDaoSupport implements MenuDao {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Menu> findAll() {
-		return (List<Menu>)getHibernateTemplate().find("from Menu");
+		return getHibernateTemplate().find("from Menu");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Menu> findByPicAddr(String picAddr) {
+		return getHibernateTemplate().find("from Menu as u where u.picture = ?", picAddr);
 	}
 }

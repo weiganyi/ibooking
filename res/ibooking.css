@@ -12,13 +12,7 @@ body {
     text-align: center;
 }
 
-#ib_idx_content_div, 
-#ib_shop_content_div, 
-#ib_orderlist_content_div, 
-#ib_orderdetail_content_div,
-#ib_man_user_content_div,
-#ib_man_order_content_div,
-#ib_man_orderdetail_content_div, {
+#ib_idx_content_div {
     width: 90%;
     margin: auto;
 }
@@ -87,7 +81,12 @@ body {
     color: red;
 }
 
-/*** shopping.jsp ***/
+/*** shopping_content.jsp ***/
+#ib_shop_content_div {
+    width: 90%;
+    margin: auto;
+}
+
 .ib_shop_remark_input {
     width: 80%;
 }
@@ -122,4 +121,44 @@ body {
 
 .ib_perinfo_error_div {
     color: red;
+}
+
+/*** orderlist_content.jsp ***/
+#ib_orderlist_content_div {
+    width: 90%;
+    margin: auto;
+}
+
+/*** orderdetail.jsp ***/
+#ib_orderdetail_content_div {
+    width: 90%;
+    margin: auto;
+}
+
+/*** man_user_content.jsp ***/
+#ib_man_user_content_div {
+    width: 90%;
+    margin: auto;
+}
+
+/*** man_order_content.jsp ***/
+#ib_man_order_content_di {
+    width: 90%;
+    margin: auto;
+}
+
+/*** man_orderdetail_content.jsp ***/
+#ib_man_orderdetail_content_div {
+    width: 90%;
+    margin: auto;
+}
+
+/*** man_pic_content.jsp ***/
+#ib_man_pic_content_div {
+    width: 90%;
+    margin: auto;
+}
+
+.ib_man_pic_caption_h {
+    text-align: center;
 }

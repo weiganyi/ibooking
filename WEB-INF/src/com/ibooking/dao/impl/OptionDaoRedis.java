@@ -48,17 +48,17 @@ public class OptionDaoRedis implements OptionDao {
 		this.optionDaoHbm = optionDaoHbm;
 	}
 
-	public Integer getNextId() {
+	public synchronized Integer getNextId() {
 		return jedis.incr("ib_option:auto_increment").intValue();
 	}
 	
 	@Override
-	public Option get(Integer id) {
+	public synchronized Option get(Integer id) {
 		return null;
 	}
 
 	@Override
-	public Integer save(Option option){
+	public synchronized Integer save(Option option){
 		if (jedis != null) {
 			String optionId = jedis.get("ib_option:" + option.getName() + ":id");
 			if (optionId == null) {
@@ -77,20 +77,20 @@ public class OptionDaoRedis implements OptionDao {
 	}
 
 	@Override
-	public void update(Option option) {
+	public synchronized void update(Option option) {
 	}
 
 	@Override
-	public void delete(Option option) {
+	public synchronized void delete(Option option) {
 	}
 
 	@Override
-	public List<Option> findAll() {
+	public synchronized List<Option> findAll() {
 		return null;
 	}
 
 	@Override
-	public List<Option> findByName(String name) {
+	public synchronized List<Option> findByName(String name) {
 		LinkedList<Option> lstOption = new LinkedList<Option>();
 		Option option = new Option();
 		

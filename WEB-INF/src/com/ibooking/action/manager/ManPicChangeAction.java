@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import com.ibooking.action.base.*;
 
-public class ManOrderChangeAction extends BaseAction {
+public class ManPicChangeAction extends BaseAction {
 
 	/**
 	 * 
@@ -12,20 +12,17 @@ public class ManOrderChangeAction extends BaseAction {
 	private static final long serialVersionUID = 1L;
 	
 	private String opt;
-	private int id;
+	private String name;
+	private String addr;
 
 	@Override
 	public String execute() throws UnsupportedEncodingException {
 		//analysis and process the opt param
-		if (opt.equals("orderUnAccept")){
-			daoService.updateOrderAccept(id, false);
-		}else if (opt.equals("orderAccept")){
-			daoService.updateOrderAccept(id, true);
-		}else if (opt.equals("orderDel")){
-			daoService.deleteOrderTrans(id);
+		if (opt.equals("picDel")){
+			daoService.deletePic(name, addr);
 		}
 		
-		return fillManOrderPage();
+		return fillManPicPage();
 	}
 
 	public String getOpt() {
@@ -36,11 +33,19 @@ public class ManOrderChangeAction extends BaseAction {
 		this.opt = opt;
 	}
 
-	public int getId() {
-		return id;
+	public String getName() {
+		return name;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getAddr() {
+		return addr;
+	}
+
+	public void setAddr(String addr) {
+		this.addr = addr;
 	}
 }

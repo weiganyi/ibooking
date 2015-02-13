@@ -125,7 +125,7 @@
 
         <action name="manUserChange" class="com.ibooking.action.manager.ManUserChangeAction">
             <interceptor-ref name="adminStack"/>
-            <result name="success">/WEB-INF/jsp/manager/man_user.jsp</result>
+            <result name="success">/WEB-INF/jsp/manager/man_user_content.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
@@ -137,7 +137,7 @@
 
         <action name="manOrderChange" class="com.ibooking.action.manager.ManOrderChangeAction">
             <interceptor-ref name="adminStack"/>
-            <result name="success">/WEB-INF/jsp/manager/man_order.jsp</result>
+            <result name="success">/WEB-INF/jsp/manager/man_order_content.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
@@ -149,7 +149,19 @@
 
         <action name="manOrderDetailChange" class="com.ibooking.action.manager.ManOrderDetailChangeAction">
             <interceptor-ref name="adminStack"/>
-            <result name="success">/WEB-INF/jsp/manager/man_orderdetail.jsp</result>
+            <result name="success">/WEB-INF/jsp/manager/man_orderdetail_content.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manPicPageEnter" class="com.ibooking.action.manager.ManPicPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_pic.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manPicChange" class="com.ibooking.action.manager.ManPicChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_pic_content.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 

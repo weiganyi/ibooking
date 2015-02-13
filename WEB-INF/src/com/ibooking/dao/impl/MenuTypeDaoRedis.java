@@ -48,30 +48,30 @@ public class MenuTypeDaoRedis implements MenuTypeDao {
 		this.menuTypeDaoHbm = menuTypeDaoHbm;
 	}
 	
-	public Integer getNextId() {
+	public synchronized Integer getNextId() {
 		return jedis.incr("ib_menu_type:auto_increment").intValue();
 	}
 
 	@Override
-	public MenuType get(Integer id) {
+	public synchronized MenuType get(Integer id) {
 		return null;
 	}
 
 	@Override
-	public Integer save(MenuType menuType) {
+	public synchronized Integer save(MenuType menuType) {
 		return 0;
 	}
 
 	@Override
-	public void update(MenuType menuType) {
+	public synchronized void update(MenuType menuType) {
 	}
 
 	@Override
-	public void delete(MenuType menuType) {
+	public synchronized void delete(MenuType menuType) {
 	}
 
 	@Override
-	public List<MenuType> findAll() {
+	public synchronized List<MenuType> findAll() {
 		LinkedList<MenuType> lstMenuType = new LinkedList<MenuType>();
 		Set<String> setId = jedis.keys("ib_menu_type:*:id");
 		

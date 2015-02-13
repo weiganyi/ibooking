@@ -59,6 +59,8 @@ public class BaseAction extends ActionSupport {
 	//pass to the orderdetail.jsp and man_orderdetail.jsp
 	protected ArrayList<OrderDetail> lstOrderDetail;
 
+	//pass to the man_pic.jsp
+	protected ArrayList<ManPicBean> lstPicBean;
 
 	public String fillTitle() {
 		strTitle = daoService.getTitle();
@@ -190,6 +192,27 @@ public class BaseAction extends ActionSupport {
 		endPage = clsManOrderPageBean.getEndPage();
 		maxPage = clsManOrderPageBean.getMaxPage();
 		destPage = "manOrderPageEnter";
+		
+		return RET_SUCC;
+	}
+
+	public String fillManPicPage() {
+		ManPicPageBean clsManPicPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManPicPageBean = daoService.getManPicPageBean(currPage);
+		if (clsManPicPageBean.getLst().size() != 0) {
+			lstPicBean = clsManPicPageBean.getLst();
+		}
+		startPage = clsManPicPageBean.getStartPage();
+		endPage = clsManPicPageBean.getEndPage();
+		maxPage = clsManPicPageBean.getMaxPage();
+		destPage = "manPicPageEnter";
 		
 		return RET_SUCC;
 	}
@@ -328,5 +351,13 @@ public class BaseAction extends ActionSupport {
 
 	public void setLstOrderDetail(ArrayList<OrderDetail> lstOrderDetail) {
 		this.lstOrderDetail = lstOrderDetail;
+	}
+
+	public ArrayList<ManPicBean> getLstPicBean() {
+		return lstPicBean;
+	}
+
+	public void setLstPicBean(ArrayList<ManPicBean> lstPicBean) {
+		this.lstPicBean = lstPicBean;
 	}
 }

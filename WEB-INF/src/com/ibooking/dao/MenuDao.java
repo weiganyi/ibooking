@@ -14,4 +14,6 @@ public interface MenuDao {
 	void delete(Menu menu);
 	
 	List<Menu> findAll();
+	
+	List<Menu> findByPicAddr(String picAddr);
 }

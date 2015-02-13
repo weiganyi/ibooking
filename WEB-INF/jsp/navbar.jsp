@@ -10,6 +10,7 @@
                     <ul class="dropdown-menu" role="menu">
                         <li><a href="manUserPageEnter"><s:text name="navManUser" /></a></li>
                         <li><a href="manOrderPageEnter"><s:text name="navManOrder" /></a></li>
+                        <li><a href="manPicPageEnter"><s:text name="navManPic" /></a></li>
                         <li><a href="manMenuPageEnter"><s:text name="navManMenu" /></a></li>
                         <li><a href="manMenuTypePageEnter"><s:text name="navManMenuType" /></a></li>
                         <li><a href="manOptionPageEnter"><s:text name="navManOption" /></a></li>
