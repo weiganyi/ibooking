@@ -1,5 +1,6 @@
 package com.ibooking.service;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import com.ibooking.po.OrderDetail;
@@ -65,7 +66,7 @@ public interface DaoService {
 	
 	//man_order.jsp
 	ManOrderPageBean getManOrderPageBean(int iCurrPage);
-	boolean updateOrderAccept(int id, boolean isAccept);
+	boolean updateOrderAccept(int id, String adminName, boolean isAccept);
 	
 	//man_orderdetail.jsp
 	boolean insertOrderDetail(int orderId,
@@ -84,4 +85,5 @@ public interface DaoService {
 	//man_pic.jsp
 	ManPicPageBean getManPicPageBean(int iCurrPage);
 	void deletePic(String name, String addr);
+	void uploadPic(String uploadFileName, File upload) throws Exception;
 }

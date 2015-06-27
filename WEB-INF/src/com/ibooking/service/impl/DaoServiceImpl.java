@@ -1,6 +1,9 @@
 package com.ibooking.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,13 +31,14 @@ public class DaoServiceImpl implements DaoService {
 	private MenuTypeDao menuTypeDaoRds;
 	private OptionDao optionDaoRds;
 	
-	enum OPT {INVALID, UPDATE_MENU_LST, SAVE_USER, UPDATE, DELETE};
+	enum OPT {INVALID, UPDATE_MENU_LST};
 	private LinkedBlockingQueue<OptInfo> q;
 	private Thread thd;
 
 	private static final int defaultMaxPagination = 7;
 	
 	private static final String defaultPicSavePath = "res/pic/"; 
+	private static final String defaultPicDelPath = "res/tmp/";
 	
 	@Override
 	public boolean validatePasswd(String userName, String userPasswd) {
@@ -776,7 +780,7 @@ public class DaoServiceImpl implements DaoService {
 	}
 
 	@Override
-	public boolean updateOrderAccept(int id, boolean isAccept) {
+	public boolean updateOrderAccept(int id, String adminName, boolean isAccept) {
 		//get the order from hibernate
 		Order order = orderDaoHbm.get(id);
 		if (order == null) {
@@ -788,6 +792,7 @@ public class DaoServiceImpl implements DaoService {
 		}else {
 			order.setAccept(0);
 		}
+		order.setAdminName(adminName);
 		//update the order into hibernate
 		orderDaoHbm.update(order);
 		
@@ -926,7 +931,7 @@ public class DaoServiceImpl implements DaoService {
 				} else {
 					iStartPage = 1;
 				}
-
+	
 				if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
 					iEndPage = iCurrPage + defaultMaxPagination / 2;
 				} else {
@@ -938,18 +943,54 @@ public class DaoServiceImpl implements DaoService {
 			clsManPicPageBean.setMaxPage(iPageNum);
 		}
 
+		/*
+		//get the menu from redis
+		lstMenu = menuDaoRds.findAll();
+		for (Menu menu : lstMenu) {
+			//exclude the menu without picture address
+			if (menu.getPicture().isEmpty()) {
+				continue;
+			}
+			
+			iPicNum++;
+
+			if (iPicNum > iMaxPicOneLine) {
+				iPicNum = 0;
+				iLineNum++;
+			}
+			if (iLineNum > iMaxLineOnePage) {
+				iLineNum = 1;
+				iPageNum++;
+			}
+
+			if (iPageNum == iCurrPage) {
+				manPicBean = new ManPicBean();
+				manPicBean.setName(menu.getName());
+				manPicBean.setAddr(menu.getPicture());
+
+				lstPicBean.add(manPicBean);
+			}
+		}
+		*/
+
 		return clsManPicPageBean;
 	}
 	
 	@Override
+	@SuppressWarnings("deprecation")
 	public void deletePic(String name, String addr) {
-		ArrayList<Menu> lstNewMenu = null;
+		ArrayList<Menu> lstNewMenu = new ArrayList<Menu>();
 		
-		@SuppressWarnings("deprecation")
+		//move the pic file to del directory
 		String rootDir = ServletActionContext.getRequest().getRealPath("/");
-		File f = new File(rootDir + addr);
-		if(f.isFile()) {
-			f.delete();
+		String picDir = rootDir + addr;
+		String[] pp = addr.split("/");
+		String picDelDir = rootDir + defaultPicDelPath + pp[2];
+		String cmd = "mv " + picDir + " " + picDelDir;
+		try {
+			Runtime.getRuntime().exec(cmd);
+		} catch (IOException e1) {
+			return;
 		}
 		
 		//find menu list from redis
@@ -969,6 +1010,8 @@ public class DaoServiceImpl implements DaoService {
 		oi.setOpt(OPT.UPDATE_MENU_LST);
 		oi.setLstOldMenu(lstOldMenu);
 		oi.setLstNewMenu(lstNewMenu);
+		oi.setPicDir(picDir);
+		oi.setPicDelDir(picDelDir);
 		try {
 			//put this msg into the queue
 			q.put(oi);
@@ -979,6 +1022,10 @@ public class DaoServiceImpl implements DaoService {
 				for (Menu menu : lstOldMenu) {
 					menuDaoRds.update(menu);
 				}
+				
+				//restore the pic file from del directory
+				cmd = "mv " + picDelDir + " " + picDir;
+				Runtime.getRuntime().exec(cmd);
 			}catch (Exception e2) {
 				System.out.println("DaoServiceImpl.deletePic() menuDaoRds.update() catch exception: " + e.getMessage());
 				//redis and mysql will be inconsistency in here
@@ -988,6 +1035,26 @@ public class DaoServiceImpl implements DaoService {
 		return;
 	}
 
+	@Override
+	public void uploadPic(String uploadFileName, File upload) throws Exception {
+		@SuppressWarnings("deprecation")
+		String rootDir = ServletActionContext.getRequest().getRealPath("/");
+		String outfileName = rootDir + defaultPicSavePath + uploadFileName;
+		FileOutputStream fos = new FileOutputStream(outfileName);
+
+		FileInputStream fis = new FileInputStream(upload);
+
+		byte[] buffer = new byte[1024];
+		int len = 0;
+		while ((len = fis.read(buffer)) > 0) {
+			fos.write(buffer, 0, len);
+		}
+
+		fos.close();
+		fis.close();
+		return;
+	}
+	
 	public void init() {
 		//create the queue
 		q = new LinkedBlockingQueue<OptInfo>();
@@ -1015,6 +1082,8 @@ public class DaoServiceImpl implements DaoService {
 		private OPT opt;
 		private ArrayList<Menu> lstOldMenu;
 		private ArrayList<Menu> lstNewMenu;
+		private String picDir;
+		private String picDelDir;
 
 		public OPT getOpt() {
 			return opt;
@@ -1033,6 +1102,18 @@ public class DaoServiceImpl implements DaoService {
 		}
 		public void setLstNewMenu(ArrayList<Menu> lstNewMenu) {
 			this.lstNewMenu = lstNewMenu;
+		}
+		public String getPicDir() {
+			return picDir;
+		}
+		public void setPicDir(String picDir) {
+			this.picDir = picDir;
+		}
+		public String getPicDelDir() {
+			return picDelDir;
+		}
+		public void setPicDelDir(String picDelDir) {
+			this.picDelDir = picDelDir;
 		}
 	}
 
@@ -1054,12 +1135,18 @@ public class DaoServiceImpl implements DaoService {
 				}else if (oi.getOpt() == OPT.UPDATE_MENU_LST) {
 					ArrayList<Menu> lstOldMenu = oi.getLstOldMenu();
 					ArrayList<Menu> lstNewMenu = oi.getLstNewMenu();
+					String picDir = oi.getPicDir();
+					String picDelDir = oi.getPicDelDir();
 					
 					try {
 						//update the menu into hibernate
 						for (Menu menu : lstNewMenu) {
 							menuDaoHbm.update(menu);
 						}
+					
+						//delete the pic file from del directory
+						String cmd = "rm -fr " + picDelDir;
+						Runtime.getRuntime().exec(cmd);
 					}catch (Exception e) {
 						System.out.println("DaoServiceImpl.Consumer.run() menuDaoHbm.update() catch exception: " + e.getMessage());
 						try {
@@ -1067,58 +1154,16 @@ public class DaoServiceImpl implements DaoService {
 							for (Menu menu : lstOldMenu) {
 								menuDaoRds.update(menu);
 							}
+							
+							//restore the pic file from del directory
+							String cmd = "mv " + picDelDir + " " + picDir;
+							Runtime.getRuntime().exec(cmd);
 						}catch (Exception e2) {
 							System.out.println("DaoServiceImpl.Consumer.run() menuDaoRds.update() catch exception: " + e.getMessage());
 							//redis and mysql will be inconsistency in here
 						}
 					}
-				}/*else if (oi.getOpt() == OPT.SAVE_USER) {
-					newUser = oi.getNewUser();
-
-					try {
-						//save the user into hibernate
-						userDaoHbm.save(newUser);
-					}catch (Exception e) {
-						System.out.println("DaoServiceImpl.Consumer.run() userDaoHbm.save() catch exception: " + e.getMessage());
-						try {
-							//if fail, need restore the redis
-							userDaoRds.delete(newUser);
-						}catch (Exception e2) {
-							System.out.println("DaoServiceImpl.Consumer.run() userDaoRds.delete() catch exception: " + e.getMessage());
-							//redis and mysql will be inconsistency in here
-						}
-					}
 				}
-				else if (oi.getOpt() == OPT.UPDATE) {
-					newUser = oi.getNewUser();
-					oldUser = oi.getOldUser();
-					
-					try {
-						//update into hibernate
-						userDaoHbm.update(newUser);
-					}catch (Exception e) {
-						try {
-							//if fail, need restore the redis
-							userDaoRds.update(oldUser);
-						}catch (Exception e2) {
-							continue;
-						}
-					}
-				}else if (oi.getOpt() == OPT.DELETE) {
-					oldUser = oi.getOldUser();
-
-					try {
-						//delete from hibernate
-						userDaoHbm.delete(oldUser);
-					}catch (Exception e) {
-						try {
-							//if fail, need restore the redis
-							userDaoRds.save(oldUser);
-						}catch (Exception e2) {
-							continue;
-						}
-					}
-				}*/
 			}
 		}
 	}

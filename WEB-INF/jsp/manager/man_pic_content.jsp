@@ -4,6 +4,16 @@
 <%-- include the jstl --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<div>
+	<s:form action="manPicUpload" enctype="multipart/form-data">
+		<s:textfield name="title" key="manPicFileTitle" />
+		<s:file name="upload" key="manPicSelectFile" />
+		<s:submit key="manPicUploadBtn" />
+	</s:form>
+</div>
+
+</br></br>
+
 <div class="row">
 <s:iterator value="lstPicBean" id="bean">
     <div class="col-md-3">

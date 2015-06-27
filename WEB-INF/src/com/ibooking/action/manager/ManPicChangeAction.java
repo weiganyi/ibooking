@@ -1,7 +1,5 @@
 package com.ibooking.action.manager;
 
-import java.io.UnsupportedEncodingException;
-
 import com.ibooking.action.base.*;
 
 public class ManPicChangeAction extends BaseAction {
@@ -16,7 +14,7 @@ public class ManPicChangeAction extends BaseAction {
 	private String addr;
 
 	@Override
-	public String execute() throws UnsupportedEncodingException {
+	public String execute() throws Exception {
 		//analysis and process the opt param
 		if (opt.equals("picDel")){
 			daoService.deletePic(name, addr);

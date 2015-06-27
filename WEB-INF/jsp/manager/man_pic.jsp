@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html>
     <head>
         <%-- the header --%>
         <%@ include file="/WEB-INF/jsp/header.jsp" %>
@@ -9,7 +9,7 @@
     <body>
         <%-- the navbar --%>
         <%@ include file="/WEB-INF/jsp/navbar.jsp" %>
- 
+
         <div id="ib_man_pic_content_div">
             <%@ include file="/WEB-INF/jsp/manager/man_pic_content.jsp" %>
         </div>

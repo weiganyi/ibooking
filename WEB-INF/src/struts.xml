@@ -6,6 +6,7 @@
 <struts>
     <constant name="struts.custom.i18n.resources" value="ibooking"/>
     <constant name="struts.objectFactory.spring.autoWire" value="name"/>
+    <constant name="struts.i18n.encoding" value="utf-8"/>
 
     <package name="default" namespace="/" extends="struts-default">
         <interceptors>
@@ -165,5 +166,10 @@
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
 
+        <action name="manPicUpload" class="com.ibooking.action.manager.ManPicUploadAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_pic.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
     </package>
 </struts>
