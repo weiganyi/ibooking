@@ -171,5 +171,29 @@
             <result name="success">/WEB-INF/jsp/manager/man_pic.jsp</result>
             <result name="failure">/WEB-INF/jsp/error.jsp</result>
         </action>
+
+        <action name="manMenuPageEnter" class="com.ibooking.action.manager.ManMenuPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_menu.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manMenuChange" class="com.ibooking.action.manager.ManMenuChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_menu_content.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOptionPageEnter" class="com.ibooking.action.manager.ManOptionPageEnterAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_option.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
+
+        <action name="manOptionChange" class="com.ibooking.action.manager.ManOptionChangeAction">
+            <interceptor-ref name="adminStack"/>
+            <result name="success">/WEB-INF/jsp/manager/man_option_content.jsp</result>
+            <result name="failure">/WEB-INF/jsp/error.jsp</result>
+        </action>
     </package>
 </struts>

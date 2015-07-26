@@ -62,6 +62,13 @@ public class BaseAction extends ActionSupport {
 	//pass to the man_pic.jsp
 	protected ArrayList<ManPicBean> lstPicBean;
 
+	//pass to the man_menu.jsp
+	protected ArrayList<Menu> lstMenu;
+	protected ArrayList<MenuType> lstMenuType;
+
+	//pass to the man_option.jsp
+	protected ArrayList<Option> lstOption;
+
 	public String fillTitle() {
 		strTitle = daoService.getTitle();
 		if (strTitle == null || strTitle.isEmpty()) {
@@ -217,6 +224,50 @@ public class BaseAction extends ActionSupport {
 		return RET_SUCC;
 	}
 
+	public String fillManMenuPage() {
+		ManMenuPageBean clsManMenuPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManMenuPageBean = daoService.getManMenuPageBean(currPage);
+		if (clsManMenuPageBean.getLst().size() != 0) {
+			lstMenu = clsManMenuPageBean.getLst();
+			lstMenuType = clsManMenuPageBean.getLst2();
+			lstPicBean = clsManMenuPageBean.getLst3();
+		}
+		startPage = clsManMenuPageBean.getStartPage();
+		endPage = clsManMenuPageBean.getEndPage();
+		maxPage = clsManMenuPageBean.getMaxPage();
+		destPage = "manMenuPageEnter";
+		
+		return RET_SUCC;
+	}
+
+	public String fillManOptionPage() {
+		ManOptionPageBean clsManOptionPageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManOptionPageBean = daoService.getManOptionPageBean(currPage);
+		if (clsManOptionPageBean.getLst().size() != 0) {
+			lstOption = clsManOptionPageBean.getLst();
+		}
+		startPage = clsManOptionPageBean.getStartPage();
+		endPage = clsManOptionPageBean.getEndPage();
+		maxPage = clsManOptionPageBean.getMaxPage();
+		destPage = "manOptionPageEnter";
+		
+		return RET_SUCC;
+	}
+
 	public DaoService getDaoService() {
 		return daoService;
 	}
@@ -359,5 +410,29 @@ public class BaseAction extends ActionSupport {
 
 	public void setLstPicBean(ArrayList<ManPicBean> lstPicBean) {
 		this.lstPicBean = lstPicBean;
+	}
+
+	public ArrayList<Menu> getLstMenu() {
+		return lstMenu;
+	}
+
+	public void setLstMenu(ArrayList<Menu> lstMenu) {
+		this.lstMenu = lstMenu;
+	}
+
+	public ArrayList<MenuType> getLstMenuType() {
+		return lstMenuType;
+	}
+
+	public void setLstMenuType(ArrayList<MenuType> lstMenuType) {
+		this.lstMenuType = lstMenuType;
+	}
+
+	public ArrayList<Option> getLstOption() {
+		return lstOption;
+	}
+
+	public void setLstOption(ArrayList<Option> lstOption) {
+		this.lstOption = lstOption;
 	}
 }

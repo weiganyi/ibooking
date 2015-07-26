@@ -1,7 +1,7 @@
 package com.ibooking.dao.impl;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +54,22 @@ public class MenuTypeDaoRedis implements MenuTypeDao {
 
 	@Override
 	public synchronized MenuType get(Integer id) {
+		Set<String> setId = jedis.keys("ib_menu_type:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id2 = jedis.get(key);
+			if (Integer.valueOf(id2) == id) {
+				String name = jedis.get("ib_menu_type:" + id2 + ":menu_type_name");
+				
+				MenuType menuType = new MenuType();
+				menuType.setId(Integer.valueOf(id));
+				menuType.setName(name);
+				
+				return menuType;
+			}
+		}
+		
 		return null;
 	}
 
@@ -72,7 +88,7 @@ public class MenuTypeDaoRedis implements MenuTypeDao {
 
 	@Override
 	public synchronized List<MenuType> findAll() {
-		LinkedList<MenuType> lstMenuType = new LinkedList<MenuType>();
+		ArrayList<MenuType> lstMenuType = new ArrayList<MenuType>();
 		Set<String> setId = jedis.keys("ib_menu_type:*:id");
 		
 		//iterator the keys

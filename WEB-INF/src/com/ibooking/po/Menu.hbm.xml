@@ -11,6 +11,6 @@
         <property name="name" column="menu_name" type="string"/>
         <property name="price" column="menu_price" type="int"/>
         <property name="picture" column="menu_pic_addr" type="string"/>
-        <many-to-one name="type" cascade="all" class="MenuType" column="menu_type_id" lazy="false"/>
+        <many-to-one name="type" class="MenuType" column="menu_type_id" lazy="false"/>
     </class>
 </hibernate-mapping>

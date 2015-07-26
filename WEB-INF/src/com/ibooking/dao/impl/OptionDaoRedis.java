@@ -1,8 +1,9 @@
 package com.ibooking.dao.impl;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import redis.clients.jedis.Jedis;
 
@@ -54,60 +55,131 @@ public class OptionDaoRedis implements OptionDao {
 	
 	@Override
 	public synchronized Option get(Integer id) {
+		Set<String> setId = jedis.keys("ib_option:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id2 = jedis.get(key);
+
+			if (Integer.valueOf(id2) == id) {
+				String name = jedis.get("ib_option:" + id + ":option_name");
+				String value = jedis.get("ib_option:" + id + ":option_value");
+
+				Option option = new Option();
+				option.setId(Integer.valueOf(id));
+				option.setName(name);
+				option.setValue(value);
+				
+				return option;
+			}
+		}
+
 		return null;
 	}
 
 	@Override
 	public synchronized Integer save(Option option){
-		if (jedis != null) {
-			String optionId = jedis.get("ib_option:" + option.getName() + ":id");
-			if (optionId == null) {
-				optionId = option.getId().toString();
-
-				jedis.set("ib_option:" + option.getName() + ":id", optionId);
-
-				jedis.set("ib_option:" + optionId + ":option_name", option.getName());
-				jedis.set("ib_option:" + optionId + ":option_value", option.getValue());
-				
+		String optionId = option.getId().toString();
+		
+		//delete the old option
+		Set<String> setId = jedis.keys("ib_option:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(optionId)) {
 				return 1;
 			}
 		}
 		
+		//save the new option
+		String id = getNextId().toString();
+		jedis.set("ib_option:" + option.getName() + ":id", id);
+		jedis.set("ib_option:" + id + ":option_name", option.getName());
+		jedis.set("ib_option:" + id + ":option_value", option.getValue());
+
 		return 0;
 	}
 
 	@Override
 	public synchronized void update(Option option) {
+		String optionId = option.getId().toString();
+		
+		//delete the old option
+		Set<String> setId = jedis.keys("ib_option:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(optionId)) {
+				jedis.del(key);
+				jedis.del("ib_option:" + id + ":option_name");
+				jedis.del("ib_option:" + id + ":option_value");
+			}
+		}
+		
+		//save the new option
+		jedis.set("ib_option:" + option.getName() + ":id", optionId);
+		jedis.set("ib_option:" + optionId + ":option_name", option.getName());
+		jedis.set("ib_option:" + optionId + ":option_value", option.getValue());
 	}
 
 	@Override
 	public synchronized void delete(Option option) {
+		String optionId = option.getId().toString();
+		
+		//delete the old option
+		Set<String> setId = jedis.keys("ib_option:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(optionId)) {
+				jedis.del(key);
+				jedis.del("ib_option:" + id + ":option_name");
+				jedis.del("ib_option:" + id + ":option_value");
+			}
+		}
 	}
 
 	@Override
 	public synchronized List<Option> findAll() {
-		return null;
+		ArrayList<Option> lstOption = new ArrayList<Option>();
+		Set<String> setId = jedis.keys("ib_option:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id = jedis.get(key);
+			String name = jedis.get("ib_option:" + id + ":option_name");
+			String value = jedis.get("ib_option:" + id + ":option_value");
+
+			Option option = new Option();
+			option.setId(Integer.valueOf(id));
+			option.setName(name);
+			option.setValue(value);
+			
+			lstOption.add(option);
+		}
+
+		return lstOption;
 	}
 
 	@Override
-	public synchronized List<Option> findByName(String name) {
-		LinkedList<Option> lstOption = new LinkedList<Option>();
-		Option option = new Option();
+	public synchronized List<Option> findByName(String optionName) {
+		ArrayList<Option> lstOption = new ArrayList<Option>();
+		Set<String> setId = jedis.keys("ib_option:*:id");
 		
-		if (jedis != null) {
-			String optionId = jedis.get("ib_option:" + name + ":id");
-			if (optionId != null) {
-				String optionValue = jedis.get("ib_option:" + optionId + ":option_value");
-	
-				option.setId(Integer.valueOf(optionId));
+		//iterator the keys
+		for (String key : setId) {
+			String id = jedis.get(key);
+			String name = jedis.get("ib_option:" + id + ":option_name");
+
+			if (name.equals(optionName)) {
+				String value = jedis.get("ib_option:" + id + ":option_value");
+
+				Option option = new Option();
+				option.setId(Integer.valueOf(id));
 				option.setName(name);
-				option.setValue(optionValue);
-				lstOption.add(option);
+				option.setValue(value);
 				
-				return lstOption;
+				lstOption.add(option);
 			}
 		}
 
-		return null;
+		return lstOption;
 	}
 }

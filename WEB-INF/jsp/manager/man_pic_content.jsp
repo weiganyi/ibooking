@@ -8,7 +8,7 @@
 	<s:form action="manPicUpload" enctype="multipart/form-data">
 		<s:textfield name="title" key="manPicFileTitle" />
 		<s:file name="upload" key="manPicSelectFile" />
-		<s:submit key="manPicUploadBtn" />
+		<s:submit value="UpLoad" />
 	</s:form>
 </div>
 

@@ -86,4 +86,26 @@ public interface DaoService {
 	ManPicPageBean getManPicPageBean(int iCurrPage);
 	void deletePic(String name, String addr);
 	void uploadPic(String uploadFileName, File upload) throws Exception;
+	
+	//man_menu.jsp
+	ManMenuPageBean getManMenuPageBean(int iCurrPage);
+	boolean insertMenu(String menuName, 
+			Integer menuPrice, 
+			String menuPic, 
+			Integer menuType);
+	boolean updateMenuById(int menuOldId, 
+			String menuNewName, 
+			Integer menuNewPrice, 
+			String menuNewPic, 
+			Integer menuNewType);
+	void deleteMenu(int id);
+	
+	//man_option.jsp
+	ManOptionPageBean getManOptionPageBean(int iCurrPage);
+	boolean insertOption(String optionName, 
+			String optionValue);
+	boolean updateOptionById(int optionOldId, 
+			String optionNewName, 
+			String optionNewValue);
+	void deleteOption(int id);
 }

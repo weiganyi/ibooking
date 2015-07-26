@@ -16,4 +16,6 @@ public interface MenuDao {
 	List<Menu> findAll();
 	
 	List<Menu> findByPicAddr(String picAddr);
+	
+	List<Menu> findByName(String menuName);
 }

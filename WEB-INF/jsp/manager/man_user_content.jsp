@@ -79,7 +79,7 @@
         </td>
         <td>
             <select class="form-control ib_man_user_auth_select" disabled="disabled">
-                <s:if test='<s:property value="#bean.auth" /> = "customer"'>
+                <s:if test='#bean.auth=="customer"'>
                     <option value="customer" selected="selected"><s:text name="manUserCustomer" /></option>
                     <option value="admin"><s:text name="manUserAdmin" /></option>
                 </s:if>
