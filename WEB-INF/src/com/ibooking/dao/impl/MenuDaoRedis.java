@@ -189,6 +189,41 @@ public class MenuDaoRedis implements MenuDao {
 	}
 
 	@Override
+	public synchronized List<Menu> findByName(String menuName) {
+		ArrayList<Menu> lstMenu = new ArrayList<Menu>();
+		Set<String> setId = jedis.keys("ib_menu:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id = jedis.get(key);
+			String name = jedis.get("ib_menu:" + id + ":menu_name");
+
+			if (name.equals(menuName)) {
+				String price = jedis.get("ib_menu:" + id + ":menu_price");
+				String addr = jedis.get("ib_menu:" + id + ":menu_pic_addr");
+				String typeId = jedis.get("ib_menu:" + id + ":menu_type_id");
+				
+				String typeName = jedis.get("ib_menu_type:" + typeId + ":menu_type_name");
+				
+				MenuType menuType = new MenuType();
+				menuType.setId(Integer.valueOf(typeId));
+				menuType.setName(typeName);
+
+				Menu menu = new Menu();
+				menu.setId(Integer.valueOf(id));
+				menu.setName(name);
+				menu.setPrice(Integer.valueOf(price));
+				menu.setPicture(addr);
+				menu.setType(menuType);
+				
+				lstMenu.add(menu);
+			}
+		}
+
+		return lstMenu;
+	}
+
+	@Override
 	public synchronized List<Menu> findByPicAddr(String picAddr) {
 		ArrayList<Menu> lstMenu = new ArrayList<Menu>();
 		Set<String> setId = jedis.keys("ib_menu:*:id");
@@ -224,19 +259,19 @@ public class MenuDaoRedis implements MenuDao {
 	}
 
 	@Override
-	public synchronized List<Menu> findByName(String menuName) {
+	public synchronized List<Menu> findByMenuTypeId(String menuTypeId) {
 		ArrayList<Menu> lstMenu = new ArrayList<Menu>();
 		Set<String> setId = jedis.keys("ib_menu:*:id");
 		
 		//iterator the keys
 		for (String key : setId) {
 			String id = jedis.get(key);
-			String name = jedis.get("ib_menu:" + id + ":menu_name");
+			String typeId = jedis.get("ib_menu:" + id + ":menu_type_id");
 
-			if (name.equals(menuName)) {
+			if (typeId.equals(menuTypeId)) {
+				String name = jedis.get("ib_menu:" + id + ":menu_name");
 				String price = jedis.get("ib_menu:" + id + ":menu_price");
 				String addr = jedis.get("ib_menu:" + id + ":menu_pic_addr");
-				String typeId = jedis.get("ib_menu:" + id + ":menu_type_id");
 				
 				String typeName = jedis.get("ib_menu_type:" + typeId + ":menu_type_name");
 				

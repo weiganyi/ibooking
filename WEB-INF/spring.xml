@@ -46,6 +46,9 @@
     <bean id="optionDaoRds" class="com.ibooking.dao.impl.OptionDaoRedis" p:optionDaoHbm-ref="optionDaoHbm"
         init-method="init"/>
 
+    <!-- Trans Dao Redis -->
+    <bean id="transDaoRds" class="com.ibooking.dao.impl.TransDaoRedis"/>
+
     <!-- Dao Service -->
     <bean id="serviceTemplate" abstract="true" lazy-init="true" 
         p:menuDaoHbm-ref="menuDaoHbm"
@@ -57,7 +60,8 @@
         p:orderDetailDaoHbm-ref="orderDetailDaoHbm"
         p:menuDaoRds-ref="menuDaoRds"
         p:menuTypeDaoRds-ref="menuTypeDaoRds"
-        p:optionDaoRds-ref="optionDaoRds"/>
+        p:optionDaoRds-ref="optionDaoRds"
+        p:transDaoRds-ref="transDaoRds"/>
     <bean id="daoService" class="com.ibooking.service.impl.DaoServiceImpl" 
         parent="serviceTemplate"
         init-method="init"

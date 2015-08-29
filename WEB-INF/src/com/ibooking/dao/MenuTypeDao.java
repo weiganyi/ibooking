@@ -14,4 +14,6 @@ public interface MenuTypeDao {
 	void delete(MenuType menuType);
 	
 	List<MenuType> findAll();
+	
+	List<MenuType> findByName(String menuTypeName);
 }

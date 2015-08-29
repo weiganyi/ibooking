@@ -31,7 +31,12 @@ public class DaoServiceImpl implements DaoService {
 	private MenuTypeDao menuTypeDaoRds;
 	private OptionDao optionDaoRds;
 	
-	enum OPT {INVALID, UPDATE_MENU_LST, SAVE_MENU, UPDATE_MENU, DELETE_MENU, SAVE_OPTION, UPDATE_OPTION, DELETE_OPTION};
+	private TransDao transDaoRds;
+	
+	enum OPT {INVALID, UPDATE_MENU_LST, 
+		SAVE_MENU, UPDATE_MENU, DELETE_MENU, 
+		SAVE_MENU_TYPE, UPDATE_MENU_TYPE, DELETE_MENU_TYPE, 
+		SAVE_OPTION, UPDATE_OPTION, DELETE_OPTION};
 	private LinkedBlockingQueue<OptInfo> q;
 	private Thread thd;
 
@@ -1277,6 +1282,197 @@ public class DaoServiceImpl implements DaoService {
 	}
 	
 	@Override
+	public ManMenuTypePageBean getManMenuTypePageBean(int iCurrPage) {
+		List<MenuType> lstMenuType = null;
+		List<Option> lstOption = null;
+
+		ArrayList<MenuType> lstMenuTypeBean = new ArrayList<MenuType>();
+		ManMenuTypePageBean clsManMenuTypePageBean = new ManMenuTypePageBean();
+
+		String optionName = "tbl_page_lines";
+
+		int iStartPage = 1;
+		int iEndPage = 1;
+		int iPageNum = 1;
+
+		int iMaxLineOnePage = 0;
+		int iLineNum = 0;
+
+		//get all menutypes from redis
+		lstMenuType = menuTypeDaoRds.findAll();
+		
+		//get the tbl_page_lines from redis
+		lstOption = optionDaoRds.findByName(optionName);
+		iMaxLineOnePage = Integer.valueOf(lstOption.get(0).getValue());
+
+		//iterator the MenuTypes
+		for (MenuType menuType : lstMenuType) {
+			//其他类型菜品永久保留，不提供管理界面修改
+			if (menuType.getId() == 1)
+				continue;
+			
+			iLineNum++;
+			if (iLineNum > iMaxLineOnePage) {
+				iLineNum = 1;
+				iPageNum++;
+			}
+			
+			if (iPageNum == iCurrPage) {
+				MenuType menuTypeBean = new MenuType();
+				menuTypeBean.setId(menuType.getId());
+				menuTypeBean.setName(menuType.getName());
+				
+				lstMenuTypeBean.add(menuTypeBean);
+			}
+		}
+		clsManMenuTypePageBean.setLst(lstMenuTypeBean);
+
+		// calc the startpage and endpage
+		if (iPageNum <= defaultMaxPagination) {
+			iStartPage = 1;
+			iEndPage = iPageNum;
+		} else {
+			if (iCurrPage > defaultMaxPagination / 2) {
+				iStartPage = iCurrPage - defaultMaxPagination / 2;
+			} else {
+				iStartPage = 1;
+			}
+
+			if (iPageNum >= (iCurrPage + defaultMaxPagination / 2)) {
+				iEndPage = iCurrPage + defaultMaxPagination / 2;
+			} else {
+				iEndPage = iPageNum;
+			}
+		}
+		clsManMenuTypePageBean.setStartPage(iStartPage);
+		clsManMenuTypePageBean.setEndPage(iEndPage);
+		clsManMenuTypePageBean.setMaxPage(iPageNum);
+
+		return clsManMenuTypePageBean;
+	}
+
+	@Override
+	public boolean insertMenuType(String menuTypeName) {
+		//get the menutype from redis
+		List<MenuType> lstMenuType = menuTypeDaoRds.findByName(menuTypeName);
+		if (lstMenuType != null && lstMenuType.size() != 0 && lstMenuType.get(0) != null) {
+			return false;
+		}
+		
+		MenuType newMenuType = new MenuType();
+		newMenuType.setName(menuTypeName);
+		newMenuType.setId(0);
+		//save the menutype into redis
+		menuTypeDaoRds.save(newMenuType);
+		
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.SAVE_MENU_TYPE);
+		oi.setNewMenuType(newMenuType);
+		try {
+			//put this msg into the queue
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.insertMenuType() q.put() catch exception: " + e.getMessage());
+			try {
+				//if fail, need restore the redis
+				menuTypeDaoRds.delete(newMenuType);
+			}catch (Exception e2) {
+				System.out.println("DaoServiceImpl.insertMenuType() menuTypeDaoRds.delete() catch exception: " + e.getMessage());
+				//redis and mysql will be inconsistency in here
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean updateMenuTypeById(int menuTypeOldId, 
+								String menuTypeNewName) {
+		//get the menutype from redis
+		MenuType oldMenuType = menuTypeDaoRds.get(menuTypeOldId);
+		if (oldMenuType == null) {
+			return false;
+		}
+		
+		MenuType newMenuType = new MenuType();
+		newMenuType.setId(oldMenuType.getId());
+		newMenuType.setName(menuTypeNewName);
+		//update the menutype into redis
+		menuTypeDaoRds.update(newMenuType);
+
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.UPDATE_MENU_TYPE);
+		oi.setOldMenuType(oldMenuType);
+		oi.setNewMenuType(newMenuType);
+		try {
+			//put this msg into the queue
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.updateMenuTypeById() q.put() catch exception: " + e.getMessage());
+			try {
+				//if fail, need restore the redis
+				menuTypeDaoRds.update(oldMenuType);
+			}catch (Exception e2) {
+				System.out.println("DaoServiceImpl.updateMenuTypeById() menuTypeDaoRds.update() catch exception: " + e.getMessage());
+				//redis and mysql will be inconsistency in here
+			}
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public void deleteMenuType(int id) {
+		List<Menu> lstOldMenu = null;
+		
+		//get the menutype from redis
+		MenuType oldMenuType = menuTypeDaoRds.get(id);
+		if (oldMenuType != null) {
+			//get all menus from redis
+			lstOldMenu = menuDaoRds.findByMenuTypeId(String.valueOf(oldMenuType.getId()));
+
+			//get the default menutype
+			MenuType newMenuType = menuTypeDaoRds.get(1);
+			if (newMenuType == null) {
+				System.out.println("DaoServiceImpl.deleteMenuType() menuTypeDaoRds.get(1) fail ");
+				return;
+			}
+
+			//update all menus to new type
+			//delete the menutype from redis
+			transDaoRds.deleteMenuType(lstOldMenu, oldMenuType, newMenuType);
+		}
+
+		OptInfo oi = new OptInfo();
+		oi.setOpt(OPT.DELETE_MENU_TYPE);
+		oi.setOldMenuType(oldMenuType);
+		oi.setLstOldMenu((ArrayList<Menu>)lstOldMenu);
+		try {
+			//put this msg into the queue
+			q.put(oi);
+		}catch (InterruptedException e) {
+			System.out.println("DaoServiceImpl.deleteMenuType() q.put() catch exception: " + e.getMessage());
+			try {
+				//if fail, need restore the redis
+				menuTypeDaoRds.save(oldMenuType);
+				
+				List<MenuType> lstMenuType = menuTypeDaoRds.findByName(oldMenuType.getName());
+				if (lstMenuType != null && lstMenuType.size() != 0 && lstMenuType.get(0) != null) {
+					for (Menu menu : lstOldMenu) {
+						menu.setType(lstMenuType.get(0));
+						menuDaoRds.update(menu);
+					}
+				}
+			}catch (Exception e2) {
+				System.out.println("DaoServiceImpl.deleteMenuType() menuTypeDaoRds.save() catch exception: " + e.getMessage());
+				//redis and mysql will be inconsistency in here
+			}
+		}
+		
+		return;
+	}
+	
+	@Override
 	public ManOptionPageBean getManOptionPageBean(int iCurrPage) {
 		List<Option> lstOption = null;
 		List<Option> lstOption2 = null;
@@ -1480,6 +1676,9 @@ public class DaoServiceImpl implements DaoService {
 		private Menu oldMenu;
 		private Menu newMenu;
 
+		private MenuType oldMenuType;
+		private MenuType newMenuType;
+
 		private Option oldOption;
 		private Option newOption;
 
@@ -1524,6 +1723,18 @@ public class DaoServiceImpl implements DaoService {
 		}
 		public void setNewMenu(Menu newMenu) {
 			this.newMenu = newMenu;
+		}
+		public MenuType getOldMenuType() {
+			return oldMenuType;
+		}
+		public void setOldMenuType(MenuType oldMenuType) {
+			this.oldMenuType = oldMenuType;
+		}
+		public MenuType getNewMenuType() {
+			return newMenuType;
+		}
+		public void setNewMenuType(MenuType newMenuType) {
+			this.newMenuType = newMenuType;
 		}
 		public Option getOldOption() {
 			return oldOption;
@@ -1631,6 +1842,78 @@ public class DaoServiceImpl implements DaoService {
 							menuDaoRds.save(oldMenu);
 						}catch (Exception e2) {
 							System.out.println("DaoServiceImpl.Consumer.run() menuDaoRds.save() catch exception: " + e.getMessage());
+							//redis and mysql will be inconsistency in here
+						}
+					}
+				}else if (oi.getOpt() == OPT.SAVE_MENU_TYPE) {
+					MenuType newMenuType = oi.getNewMenuType();
+					
+					try {
+						//save the menutype into hibernate
+						menuTypeDaoHbm.save(newMenuType);
+					}catch (Exception e) {
+						System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoHbm.save() catch exception: " + e.getMessage());
+						try {
+							//if fail, need restore the redis
+							menuTypeDaoRds.delete(newMenuType);
+						}catch (Exception e2) {
+							System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoRds.delete() catch exception: " + e.getMessage());
+							//redis and mysql will be inconsistency in here
+						}
+					}
+				}else if (oi.getOpt() == OPT.UPDATE_MENU_TYPE) {
+					MenuType oldMenuType = oi.getOldMenuType();
+					MenuType newMenuType = oi.getNewMenuType();
+					
+					try {
+						//update the menutype into hibernate
+						menuTypeDaoHbm.update(newMenuType);
+					}catch (Exception e) {
+						System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoHbm.update() catch exception: " + e.getMessage());
+						try {
+							//if fail, need restore the redis
+							menuTypeDaoRds.update(oldMenuType);
+						}catch (Exception e2) {
+							System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoRds.update() catch exception: " + e.getMessage());
+							//redis and mysql will be inconsistency in here
+						}
+					}
+				}else if (oi.getOpt() == OPT.DELETE_MENU_TYPE) {
+					MenuType oldMenuType = oi.getOldMenuType();
+					ArrayList<Menu> lstOldMenu = oi.getLstOldMenu();
+					
+					try {
+						//get all menus from redis
+						List<Menu> lstMenu = menuDaoHbm.findByMenuTypeId(String.valueOf(oldMenuType.getId()));
+						
+						//update all menus to new type
+						MenuType newMenuType = menuTypeDaoHbm.get(1);
+						if (newMenuType == null) {
+							System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoHbm.get(1) fail ");
+							return;
+						}
+						for (Menu menu : lstMenu) {
+							menu.setType(newMenuType);
+							menuDaoHbm.update(menu);
+						}
+
+						//delete the menutype into hibernate
+						menuTypeDaoHbm.delete(oldMenuType);
+					}catch (Exception e) {
+						System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoHbm.delete() catch exception: " + e.getMessage());
+						try {
+							//if fail, need restore the redis
+							menuTypeDaoRds.save(oldMenuType);
+							
+							List<MenuType> lstMenuType = menuTypeDaoRds.findByName(oldMenuType.getName());
+							if (lstMenuType != null && lstMenuType.size() != 0 && lstMenuType.get(0) != null) {
+								for (Menu menu : lstOldMenu) {
+									menu.setType(lstMenuType.get(0));
+									menuDaoRds.update(menu);
+								}
+							}
+						}catch (Exception e2) {
+							System.out.println("DaoServiceImpl.Consumer.run() menuTypeDaoRds.save() catch exception: " + e.getMessage());
 							//redis and mysql will be inconsistency in here
 						}
 					}
@@ -1768,5 +2051,13 @@ public class DaoServiceImpl implements DaoService {
 
 	public void setOptionDaoRds(OptionDao optionDaoRds) {
 		this.optionDaoRds = optionDaoRds;
+	}
+
+	public TransDao getTransDaoRds() {
+		return transDaoRds;
+	}
+
+	public void setTransDaoRds(TransDao transDaoRds) {
+		this.transDaoRds = transDaoRds;
 	}
 }

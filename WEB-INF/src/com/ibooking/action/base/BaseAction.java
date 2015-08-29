@@ -247,6 +247,27 @@ public class BaseAction extends ActionSupport {
 		return RET_SUCC;
 	}
 
+	public String fillManMenuTypePage() {
+		ManMenuTypePageBean clsManMenuTypePageBean;
+		
+		if (page == null || page.length() == 0) {
+			currPage =  defaultMinPageNum;
+		}else {		
+			currPage = Integer.valueOf(page);
+		}
+
+		clsManMenuTypePageBean = daoService.getManMenuTypePageBean(currPage);
+		if (clsManMenuTypePageBean.getLst().size() != 0) {
+			lstMenuType = clsManMenuTypePageBean.getLst();
+		}
+		startPage = clsManMenuTypePageBean.getStartPage();
+		endPage = clsManMenuTypePageBean.getEndPage();
+		maxPage = clsManMenuTypePageBean.getMaxPage();
+		destPage = "manMenuTypePageEnter";
+		
+		return RET_SUCC;
+	}
+
 	public String fillManOptionPage() {
 		ManOptionPageBean clsManOptionPageBean;
 		

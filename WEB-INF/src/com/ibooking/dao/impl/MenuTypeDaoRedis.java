@@ -75,15 +75,57 @@ public class MenuTypeDaoRedis implements MenuTypeDao {
 
 	@Override
 	public synchronized Integer save(MenuType menuType) {
+		String menuTypeId = menuType.getId().toString();
+		
+		//delete the old menutype
+		Set<String> setId = jedis.keys("ib_menu_type:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(menuTypeId)) {
+				return 1;
+			}
+		}
+		
+		//save the new menutype
+		String id = getNextId().toString();
+		jedis.set("ib_menu_type:" + menuType.getName() + ":id", id);
+		jedis.set("ib_menu_type:" + id + ":menu_type_name", menuType.getName());
+
 		return 0;
 	}
 
 	@Override
 	public synchronized void update(MenuType menuType) {
+		String menuTypeId = menuType.getId().toString();
+		
+		//delete the old menutype
+		Set<String> setId = jedis.keys("ib_menu_type:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(menuTypeId)) {
+				jedis.del(key);
+				jedis.del("ib_menu_type:" + id + ":menu_type_name");
+			}
+		}
+		
+		//save the new menutype
+		jedis.set("ib_menu_type:" + menuType.getName() + ":id", menuTypeId);
+		jedis.set("ib_menu_type:" + menuTypeId + ":menu_type_name", menuType.getName());
 	}
 
 	@Override
 	public synchronized void delete(MenuType menuType) {
+		String menuTypeId = menuType.getId().toString();
+		
+		//delete the old menutype
+		Set<String> setId = jedis.keys("ib_menu_type:*:id");
+		for (String key : setId) {
+			String id = jedis.get(key);
+			if (id.equals(menuTypeId)) {
+				jedis.del(key);
+				jedis.del("ib_menu_type:" + id + ":menu_type_name");
+			}
+		}
 	}
 
 	@Override
@@ -101,6 +143,28 @@ public class MenuTypeDaoRedis implements MenuTypeDao {
 			menuType.setName(name);
 			
 			lstMenuType.add(menuType);
+		}
+
+		return lstMenuType;
+	}
+
+	@Override
+	public synchronized List<MenuType> findByName(String menuTypeName) {
+		ArrayList<MenuType> lstMenuType = new ArrayList<MenuType>();
+		Set<String> setId = jedis.keys("ib_menu_type:*:id");
+		
+		//iterator the keys
+		for (String key : setId) {
+			String id = jedis.get(key);
+			String name = jedis.get("ib_menu_type:" + id + ":menu_type_name");
+
+			if (name.equals(menuTypeName)) {
+				MenuType menuType = new MenuType();
+				menuType.setId(Integer.valueOf(id));
+				menuType.setName(menuTypeName);
+				
+				lstMenuType.add(menuType);
+			}
 		}
 
 		return lstMenuType;

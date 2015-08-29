@@ -100,6 +100,13 @@ public interface DaoService {
 			Integer menuNewType);
 	void deleteMenu(int id);
 	
+	//man_menu_type.jsp
+	ManMenuTypePageBean getManMenuTypePageBean(int iCurrPage);
+	boolean insertMenuType(String menuTypeName);
+	boolean updateMenuTypeById(int menuTypeOldId, 
+			String menuTypeNewName);
+	void deleteMenuType(int id);
+
 	//man_option.jsp
 	ManOptionPageBean getManOptionPageBean(int iCurrPage);
 	boolean insertOption(String optionName, 

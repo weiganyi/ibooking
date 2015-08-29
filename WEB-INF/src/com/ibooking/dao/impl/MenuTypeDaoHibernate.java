@@ -54,4 +54,10 @@ public class MenuTypeDaoHibernate extends HibernateDaoSupport implements
 	public List<MenuType> findAll() {
 		return (List<MenuType>)getHibernateTemplate().find("from MenuType");
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public synchronized List<MenuType> findByName(String menuTypeName) {
+		return getHibernateTemplate().find("from MenuType as u where u.name = ?", menuTypeName);
+	}
 }
