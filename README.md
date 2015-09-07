@@ -26,4 +26,4 @@ Usage
 Design
 =====
 Please refer to my blog(Chinese):<br/>
-http://blog.csdn.net/weiganyi/article/details/48239965<br/>
+http://blog.csdn.net/weiganyi/article/details/48261189<br/>
